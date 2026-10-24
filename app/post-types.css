@@ -1,0 +1,75 @@
+/*
+ * Post type colour tokens, the single source for the Top posts badges and
+ * the type donut (which reads --type-* directly). --type-* is the swatch:
+ * original is blue (hue 255), quote is warm amber (hue 72), reply is a muted
+ * violet (hue 300). --type-*-fg is the badge text, tuned for WCAG AA
+ * (>= 4.5:1) on the tinted badge background over the card in both themes.
+ */
+:root {
+  --type-original: oklch(0.56 0.15 255);
+  --type-original-fg: oklch(0.45 0.14 255);
+  --type-quote: oklch(0.76 0.15 72);
+  --type-quote-fg: oklch(0.48 0.11 65);
+  --type-reply: oklch(0.58 0.14 300);
+  --type-reply-fg: oklch(0.47 0.15 300);
+  --type-tint: 12%;
+  --type-tint-hover: 20%;
+}
+
+.dark {
+  --type-original: oklch(0.7 0.14 255);
+  --type-original-fg: oklch(0.82 0.09 255);
+  --type-quote: oklch(0.75 0.14 72);
+  --type-quote-fg: oklch(0.84 0.1 75);
+  --type-reply: oklch(0.68 0.13 300);
+  --type-reply-fg: oklch(0.82 0.09 300);
+  --type-tint: 16%;
+  --type-tint-hover: 26%;
+}
+
+/* Tinted badge: soft background, coloured text and border, leading dot. */
+.t-type-badge {
+  --type-color: var(--type-original);
+  --type-fg: var(--type-original-fg);
+  color: var(--type-fg);
+  background-color: color-mix(in oklch, var(--type-color) var(--type-tint), transparent);
+  border-color: color-mix(in oklch, var(--type-color) 35%, transparent);
+  /* Hover out: settle back a little softer than the hover in. */
+  transition:
+    background-color var(--duration-medium) var(--ease-smooth-out),
+    border-color var(--duration-medium) var(--ease-smooth-out);
+}
+.t-type-badge[data-post-type="quote"] {
+  --type-color: var(--type-quote);
+  --type-fg: var(--type-quote-fg);
+}
+.t-type-badge[data-post-type="reply"] {
+  --type-color: var(--type-reply);
+  --type-fg: var(--type-reply-fg);
+}
+.t-type-dot {
+  background-color: var(--type-color);
+  transition: transform var(--duration-medium) var(--ease-bounce-strong);
+}
+
+/* Hover in (row or badge): quick and direct. */
+:is(tr:hover, .t-type-badge:hover) .t-type-badge,
+.t-type-badge:hover {
+  background-color: color-mix(in oklch, var(--type-color) var(--type-tint-hover), transparent);
+  border-color: color-mix(in oklch, var(--type-color) 55%, transparent);
+  transition-duration: var(--duration-fast);
+}
+:is(tr:hover, .t-type-badge:hover) .t-type-dot {
+  transform: scale(1.35);
+  transition: transform var(--duration-fast) var(--ease-smooth-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .t-type-badge,
+  .t-type-dot {
+    transition: none !important;
+  }
+  :is(tr:hover, .t-type-badge:hover) .t-type-dot {
+    transform: none;
+  }
+}

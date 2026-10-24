@@ -1,0 +1,82 @@
+/*
+ * Comparison chip colours for the stat tiles (components/dashboard/
+ * delta-badge.tsx). Each fg sits on its own bg at WCAG AA or better:
+ *   light: up 6.0:1, down 5.7:1, flat 5.5:1
+ *   dark:  up 8.5:1, down 8.1:1, flat 6.8:1
+ * Motion reads from the transitions.dev tokens (app/transitions-tokens.css).
+ */
+:root {
+  --delta-up: oklch(0.955 0.04 150);
+  --delta-up-fg: oklch(0.46 0.11 150);
+  --delta-down: oklch(0.955 0.022 15);
+  --delta-down-fg: oklch(0.5 0.17 22);
+  --delta-flat: oklch(0.97 0 0);
+  --delta-flat-fg: oklch(0.5 0 0);
+}
+
+.dark {
+  --delta-up: oklch(0.31 0.06 150);
+  --delta-up-fg: oklch(0.85 0.13 150);
+  --delta-down: oklch(0.31 0.07 20);
+  --delta-down-fg: oklch(0.84 0.075 20);
+  --delta-flat: oklch(0.269 0 0);
+  --delta-flat-fg: oklch(0.75 0 0);
+}
+
+/* Colour crossfade when the sign flips on a range / pay-period switch. */
+.t-delta {
+  --delta-bg: var(--delta-flat);
+  --delta-fg: var(--delta-flat-fg);
+  background-color: var(--delta-bg);
+  color: var(--delta-fg);
+  border-color: color-mix(in oklch, var(--delta-fg) 20%, transparent);
+  transition:
+    background-color var(--duration-fast) var(--ease-smooth-out),
+    color var(--duration-fast) var(--ease-smooth-out),
+    border-color var(--duration-fast) var(--ease-smooth-out);
+}
+.t-delta[data-trend="up"] {
+  --delta-bg: var(--delta-up);
+  --delta-fg: var(--delta-up-fg);
+}
+.t-delta[data-trend="down"] {
+  --delta-bg: var(--delta-down);
+  --delta-fg: var(--delta-down-fg);
+}
+
+/* transitions.dev "Icon swap" (09-icon-swap.md): blur + scale cross-fade. */
+.t-delta-icons {
+  display: inline-grid;
+}
+.t-delta-icon {
+  grid-area: 1 / 1;
+  opacity: 0;
+  transform: scale(0.25);
+  filter: blur(var(--blur-small));
+  transition:
+    opacity var(--duration-fast) var(--ease-in-out),
+    transform var(--duration-fast) var(--ease-in-out),
+    filter var(--duration-fast) var(--ease-in-out);
+}
+.t-delta-icon[data-on="true"] {
+  opacity: 1;
+  transform: scale(1);
+  filter: blur(0);
+}
+
+/* Provisional change while the selected period is still running: neutral
+   colours (the arrow and signed % stay), soft dashed border. Placed after
+   the trend rules and more specific, so it wins over up/down. */
+.t-delta[data-in-progress][data-trend] {
+  --delta-bg: var(--delta-flat);
+  --delta-fg: var(--delta-flat-fg);
+  border-style: dashed;
+  border-color: color-mix(in oklch, var(--delta-fg) 45%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .t-delta,
+  .t-delta-icon {
+    transition: none !important;
+  }
+}

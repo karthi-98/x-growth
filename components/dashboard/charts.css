@@ -1,0 +1,160 @@
+/*
+ * Chart-only styles for the dashboard charts (impressions area + type
+ * donut). Timings come from the transitions.dev motion tokens in
+ * app/transitions-tokens.css. Unlayered, so these win over the shadcn
+ * chart.tsx Tailwind defaults they refine.
+ */
+
+/* Area chart: faint dashed horizontal grid, quiet cursor, glowing dot. */
+.t-area-chart .recharts-cartesian-grid-horizontal line {
+  stroke: var(--border);
+  stroke-opacity: 0.8;
+}
+.t-chart-cursor line {
+  stroke: var(--muted-foreground);
+  stroke-opacity: 0.4;
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+/* The cursor and dot persist while hovering; glide them between days in
+   step with the Recharts tooltip (180ms ease-out). */
+.t-chart-cursor,
+.t-chart-dot {
+  pointer-events: none;
+  transition: transform 180ms var(--ease-smooth-out);
+}
+.t-area-chart .recharts-cartesian-axis-tick text {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.t-area-chart .recharts-area-curve {
+  shape-rendering: geometricPrecision;
+}
+.t-chart-dot-halo {
+  fill: var(--color-impressions);
+  opacity: 0.18;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: t-chart-halo-in var(--duration-fast) var(--ease-smooth-out) both;
+}
+.t-chart-dot-core {
+  fill: var(--color-impressions);
+  stroke: var(--card);
+  stroke-width: 2;
+}
+@keyframes t-chart-halo-in {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+
+/* Donut: mount sweep timing, hover expand, pointer tooltip, center swap. */
+.t-donut {
+  --chart-sweep-dur: 800ms;
+  --chart-sweep-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Hover grow; lib/donut.ts sizes the fixed hit ring to cover it. */
+  --donut-grow: 1.05;
+}
+/* Visual arcs only paint; the fixed .t-donut-hit sectors take the pointer. */
+.t-donut .t-donut-seg {
+  pointer-events: none;
+  transform-box: view-box;
+  transform-origin: 50% 50%;
+  transition:
+    opacity var(--duration-quick) var(--ease-smooth-out),
+    transform var(--duration-fast) var(--ease-smooth-out),
+    filter var(--duration-fast) var(--ease-smooth-out);
+}
+.t-donut .t-donut-seg.is-active {
+  transform: scale(var(--donut-grow));
+  /* Soft glow in the segment's own type token, so it follows hue changes. */
+  filter: drop-shadow(
+    0 0 6px color-mix(in oklch, var(--seg-color, currentColor) 45%, transparent)
+  );
+}
+.t-donut .t-donut-hit {
+  fill: none;
+  stroke: none;
+  pointer-events: fill; /* hit-testable while invisible */
+  cursor: default;
+}
+.t-donut-tip {
+  pointer-events: none;
+  will-change: transform;
+}
+.t-donut-tip-inner {
+  opacity: 0;
+  transform: scale(var(--scale-small));
+  transform-origin: top left;
+  transition:
+    opacity var(--duration-micro) var(--ease-out),
+    transform var(--duration-micro) var(--ease-out);
+}
+.t-donut-tip[data-show="true"] .t-donut-tip-inner {
+  opacity: 1;
+  transform: scale(1);
+  transition-duration: var(--duration-quick);
+}
+@keyframes t-chart-swap {
+  from {
+    opacity: 0;
+    filter: blur(var(--blur-small));
+  }
+}
+.t-chart-swap {
+  animation: t-chart-swap var(--duration-quick) var(--ease-in-out) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .t-chart-dot-halo,
+  .t-chart-swap {
+    animation: none !important;
+  }
+  .t-chart-cursor,
+  .t-chart-dot,
+  .t-donut .t-donut-seg,
+  .t-donut-tip-inner {
+    transition: none !important;
+  }
+}
+
+/* Bar mode: soft band behind the hovered day, glides like the cursor. */
+.t-chart-band rect {
+  fill: var(--muted-foreground);
+  fill-opacity: 0.1;
+}
+.t-chart-band {
+  pointer-events: none;
+  transition: transform 180ms var(--ease-smooth-out);
+}
+
+/* Curve <-> bar switch: the new chart fades and un-blurs in (and plays its
+   own draw-in) while the old one fades out on top, in one fixed box. */
+@keyframes t-chart-layer-in {
+  from {
+    opacity: 0;
+    filter: blur(var(--blur-small));
+  }
+}
+@keyframes t-chart-layer-out {
+  to {
+    opacity: 0;
+  }
+}
+.t-chart-layer[data-state="in"] {
+  animation: t-chart-layer-in var(--duration-fast) var(--ease-smooth-out) both;
+}
+.t-chart-layer[data-state="out"] {
+  pointer-events: none;
+  animation: t-chart-layer-out var(--duration-quick) var(--ease-out) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .t-chart-band {
+    transition: none !important;
+  }
+  .t-chart-layer {
+    animation: none !important;
+  }
+}

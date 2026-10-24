@@ -1,0 +1,35 @@
+/* App sidebar motion (transitions.dev tokens). The rail resize uses the
+   "resize / position change" pairing; labels fade as the rail collapses. */
+[data-slot="sidebar-gap"],
+[data-slot="sidebar-container"] {
+  transition-duration: var(--duration-fast);
+  transition-timing-function: var(--ease-smooth-out);
+}
+.t-app-sidebar [data-slot="sidebar-group-label"] {
+  transition-duration: var(--duration-fast);
+  transition-timing-function: var(--ease-smooth-out);
+}
+.t-app-sidebar [data-slot="sidebar-menu-button"] {
+  transition-property: width, height, padding, background-color, color;
+  transition-duration: var(--duration-fast);
+  transition-timing-function: var(--ease-smooth-out);
+}
+.t-app-sidebar [data-slot="sidebar-menu-button"] > span:last-child {
+  transition: opacity var(--duration-fast) var(--ease-smooth-out);
+}
+[data-slot="sidebar"][data-collapsible="icon"] .t-app-sidebar [data-slot="sidebar-menu-button"] > span:last-child {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-slot^="sidebar"],
+  [data-slot^="sidebar"] *,
+  .t-app-sidebar,
+  .t-app-sidebar * {
+    transition: none !important;
+  }
+  [data-slot="sheet-content"],
+  [data-slot="sheet-overlay"] {
+    animation: none !important;
+  }
+}

@@ -1,0 +1,15 @@
+/* Date-range filter pending state (transitions.dev motion tokens). The dim
+   waits --duration-micro so fast navigations never flash. */
+.t-pending {
+  transition: opacity var(--duration-fast) var(--ease-smooth-out);
+}
+.t-pending[data-pending] {
+  opacity: 0.55;
+  transition-delay: var(--duration-micro);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .t-pending {
+    transition: none !important;
+  }
+}

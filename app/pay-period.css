@@ -1,0 +1,151 @@
+/*
+ * Pay period select motion, from the transitions.dev tokens in
+ * ./transitions-tokens.css: the list grows in from its trigger ("Menu
+ * dropdown": --dropdown-open-dur / --dropdown-pre-scale / --dropdown-ease)
+ * and the trigger label blurs in on change ("Text swap soft").
+ * Unlayered, so it wins over the tw-animate defaults on the shadcn primitive.
+ */
+@keyframes t-dropdown-in {
+  from {
+    opacity: 0;
+    transform: scale(var(--dropdown-pre-scale));
+  }
+}
+@keyframes t-dropdown-out {
+  to {
+    opacity: 0;
+    transform: scale(var(--dropdown-closing-scale));
+  }
+}
+.t-select-content[data-state="open"] {
+  animation: t-dropdown-in var(--dropdown-open-dur) var(--dropdown-ease) both;
+}
+.t-select-content[data-state="closed"] {
+  animation: t-dropdown-out var(--dropdown-close-dur) var(--dropdown-ease) both;
+}
+.t-select-content [data-slot="select-item"] {
+  transition: background-color var(--duration-micro) var(--ease-smooth-out);
+}
+
+@keyframes t-value-swap-in {
+  from {
+    opacity: 0;
+    filter: blur(var(--text-soft-blur, 2px));
+  }
+}
+.t-value-swap {
+  animation: t-value-swap-in var(--text-soft-dur, 200ms) var(--text-soft-ease, ease-in-out) both;
+}
+
+/* Chevron turns while the list is open (quick, smooth out). */
+.t-select-chevron {
+  transition: transform var(--duration-fast) var(--ease-smooth-out);
+}
+[aria-expanded="true"] > .t-select-chevron {
+  transform: rotate(180deg);
+}
+
+/* Paid tick: hairline-weight, muted. */
+.t-paid-icon {
+  width: 0.75rem;
+  height: 0.75rem;
+  opacity: 0.8;
+}
+
+/* Scroll fade: the list's edges dissolve only where more items are hidden,
+   driven by the viewport's own scroll position where supported. */
+@property --t-fade-top {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+@property --t-fade-bottom {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+.t-select-content [data-radix-select-viewport] {
+  scrollbar-width: none;
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 var(--t-fade-top),
+    #000 calc(100% - var(--t-fade-bottom)),
+    transparent 100%
+  );
+}
+@keyframes t-scroll-fade {
+  0% {
+    --t-fade-top: 0px;
+    --t-fade-bottom: 24px;
+  }
+  6%,
+  94% {
+    --t-fade-top: 24px;
+    --t-fade-bottom: 24px;
+  }
+  100% {
+    --t-fade-top: 24px;
+    --t-fade-bottom: 0px;
+  }
+}
+@supports (animation-timeline: scroll()) {
+  .t-select-content [data-radix-select-viewport] {
+    animation: t-scroll-fade linear both;
+    animation-timeline: scroll(self);
+  }
+}
+/* Radix's arrow buttons duplicate the fade; keep the list clean. */
+.t-select-content [data-slot^="select-scroll"] {
+  display: none;
+}
+
+/* "In progress" tag: a small live dot that breathes slowly. */
+.t-live-dot {
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 9999px;
+  background: currentColor;
+  box-shadow: 0 0 0 0 color-mix(in oklch, currentColor 40%, transparent);
+  animation: t-live-pulse calc(var(--duration-very-slow) * 4) var(--ease-smooth-out) infinite;
+}
+@keyframes t-live-pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in oklch, currentColor 40%, transparent);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 4px color-mix(in oklch, currentColor 0%, transparent);
+  }
+}
+
+/* One flat list: no check indicator; a "Selected" pill marks the choice. */
+.t-period-item > span:first-child {
+  display: none;
+}
+@keyframes t-pill-in {
+  from {
+    opacity: 0;
+    transform: scale(var(--scale-small, 0.95));
+  }
+}
+.t-pill-in {
+  animation: t-pill-in var(--duration-fast) var(--ease-smooth-out) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .t-select-content[data-state],
+  .t-value-swap {
+    animation: none !important;
+  }
+  .t-select-chevron {
+    transition: none !important;
+  }
+  .t-live-dot,
+  .t-pill-in {
+    animation: none !important;
+  }
+  .t-select-content [data-slot="select-item"] {
+    transition: none !important;
+  }
+}

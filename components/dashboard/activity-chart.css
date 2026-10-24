@@ -1,0 +1,70 @@
+/*
+ * "Posts and replies" chart. Shares the dashed grid / glide cursor from
+ * ./charts.css; this file only adds what is specific to two series and the
+ * header totals. Motion reads from the transitions.dev tokens.
+ */
+
+/* Active dot per series, coloured from the series' chart token. */
+.t-activity-dot {
+  pointer-events: none;
+}
+.t-activity-dot-halo {
+  fill: var(--dot-color);
+  opacity: 0.18;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: t-activity-halo-in var(--duration-fast) var(--ease-smooth-out) both;
+}
+.t-activity-dot-core {
+  fill: var(--dot-color);
+  stroke: var(--card);
+  stroke-width: 2;
+}
+@keyframes t-activity-halo-in {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+
+/* transitions.dev "Text swap soft" (34-text-swap-soft.md) for the range
+   totals: old value blurs out while the new one blurs in, width eases. */
+.t-text-soft {
+  --text-soft-dur: 200ms;
+  --text-soft-blur: var(--blur-small);
+  --text-soft-ease: var(--ease-in-out);
+  --text-soft-resize-dur: 240ms;
+  --text-soft-resize-ease: var(--ease-smooth-out);
+  display: inline-grid;
+  justify-items: var(--text-soft-align, start);
+  transition: width var(--text-soft-resize-dur) var(--text-soft-resize-ease);
+}
+.t-text-soft > span {
+  grid-area: 1 / 1;
+  white-space: pre;
+  transition:
+    filter var(--text-soft-dur) var(--text-soft-ease),
+    opacity var(--text-soft-dur) var(--text-soft-ease);
+}
+.t-text-soft-new {
+  opacity: 0;
+  filter: blur(var(--text-soft-blur));
+}
+.t-text-soft.is-swapping .t-text-soft-old {
+  opacity: 0;
+  filter: blur(var(--text-soft-blur));
+}
+.t-text-soft.is-swapping .t-text-soft-new {
+  opacity: 1;
+  filter: blur(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .t-activity-dot-halo {
+    animation: none !important;
+  }
+  .t-text-soft,
+  .t-text-soft > span {
+    transition: none !important;
+  }
+}

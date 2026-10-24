@@ -1,0 +1,11 @@
+/* Top posts card: "View all posts" arrow nudges right on hover/focus. */
+@media (prefers-reduced-motion: no-preference) {
+  .t-view-all-arrow {
+    transition: translate var(--duration-medium) var(--ease-bounce);
+  }
+  .t-view-all:hover .t-view-all-arrow,
+  .t-view-all:focus-visible .t-view-all-arrow {
+    translate: 3px 0;
+    transition: translate var(--duration-fast) var(--ease-smooth-out);
+  }
+}
