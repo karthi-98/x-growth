@@ -1,0 +1,142 @@
+/*
+ * Insights page styles. The heatmap uses one sequential hue (255, the
+ * chart-1 blue): light to dark for more impressions in light mode, and the
+ * reverse (dark to light) in dark mode, each step separated in lightness
+ * against the card. Cells with too few posts are hatched so they never read
+ * as "low" by colour alone.
+ */
+:root {
+  --heat-1: oklch(0.92 0.045 255);
+  --heat-2: oklch(0.83 0.08 255);
+  --heat-3: oklch(0.72 0.115 255);
+  --heat-4: oklch(0.6 0.14 255);
+  --heat-5: oklch(0.47 0.15 255);
+  --heat-hatch: oklch(0.556 0 0 / 0.35);
+}
+
+.dark {
+  --heat-1: oklch(0.31 0.05 255);
+  --heat-2: oklch(0.42 0.08 255);
+  --heat-3: oklch(0.54 0.11 255);
+  --heat-4: oklch(0.67 0.12 255);
+  --heat-5: oklch(0.8 0.1 255);
+  --heat-hatch: oklch(0.708 0 0 / 0.35);
+}
+
+.t-heat-wrap {
+  container-type: inline-size;
+  position: relative;
+}
+
+/* Wide: weekdays down, 24 hours across. */
+.t-heat {
+  display: grid;
+  grid-template-columns: 2.5rem repeat(24, minmax(0, 1fr));
+  grid-auto-rows: 1.5rem;
+  gap: 2px;
+}
+.t-heat [data-slot="heat-row"] {
+  display: contents;
+}
+.t-heat [data-slot="heat-hour"] {
+  grid-row: 1;
+  grid-column: var(--col);
+  white-space: nowrap;
+}
+/* Wide: show every third hour label; the others stay readable by screen readers. */
+.t-heat [data-slot="heat-hour"][data-minor] {
+  color: transparent;
+}
+.t-heat [data-slot="heat-day"] {
+  grid-row: var(--row);
+  grid-column: 1;
+}
+.t-heat [data-slot="heat-cell"] {
+  grid-row: var(--row);
+  grid-column: var(--col);
+}
+
+/* Narrow: transpose to hours down, weekdays across, so cells stay tappable. */
+@container (max-width: 34rem) {
+  .t-heat {
+    grid-template-columns: 3rem repeat(7, minmax(0, 1fr));
+    grid-auto-rows: 1.25rem;
+  }
+  .t-heat [data-slot="heat-hour"] {
+    grid-row: var(--col);
+    grid-column: 1;
+  }
+  .t-heat [data-slot="heat-day"] {
+    grid-row: 1;
+    grid-column: var(--row);
+  }
+  .t-heat [data-slot="heat-cell"] {
+    grid-row: var(--col);
+    grid-column: var(--row);
+  }
+  .t-heat [data-slot="heat-hour"][data-minor] {
+    color: inherit;
+  }
+}
+
+.t-heat-cell {
+  border-radius: 3px;
+  outline: none;
+  background-color: transparent;
+  box-shadow: inset 0 0 0 1px var(--border);
+  transition:
+    box-shadow var(--duration-fast) var(--ease-smooth-out),
+    transform var(--duration-fast) var(--ease-smooth-out);
+}
+.t-heat-cell[data-level="1"] { background-color: var(--heat-1); box-shadow: none; }
+.t-heat-cell[data-level="2"] { background-color: var(--heat-2); box-shadow: none; }
+.t-heat-cell[data-level="3"] { background-color: var(--heat-3); box-shadow: none; }
+.t-heat-cell[data-level="4"] { background-color: var(--heat-4); box-shadow: none; }
+.t-heat-cell[data-level="5"] { background-color: var(--heat-5); box-shadow: none; }
+.t-heat-cell[data-level="0"][data-sparse] {
+  background-image: repeating-linear-gradient(
+    135deg,
+    var(--heat-hatch) 0 1px,
+    transparent 1px 4px
+  );
+}
+.t-heat .t-heat-cell:hover,
+.t-heat .t-heat-cell[data-active] {
+  box-shadow:
+    0 0 0 2px var(--card),
+    0 0 0 4px var(--foreground);
+  z-index: 1;
+}
+.t-heat .t-heat-cell:focus-visible {
+  box-shadow:
+    0 0 0 2px var(--card),
+    0 0 0 4px var(--ring);
+  z-index: 1;
+}
+
+/* Legend swatches reuse the cell look. */
+.t-heat-swatch {
+  width: 1.25rem;
+  height: 0.75rem;
+  border-radius: 3px;
+}
+
+.t-heat-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-smooth-out);
+}
+.t-heat-tip[data-show="true"] {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .t-heat-cell,
+  .t-heat-tip {
+    transition: none !important;
+  }
+}

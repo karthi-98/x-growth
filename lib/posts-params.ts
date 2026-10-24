@@ -36,7 +36,7 @@ export const POSTS_PAGE_SIZE = 25
 export type PostsParams = {
   view: PostsView
   range: PostsRange
-  /** Inclusive IST dates from `?from=&to=`; overrides `range` when set. */
+  /** Inclusive local dates from `?from=&to=`; overrides `range` when set. */
   custom: DateRangeKeys | null
   sort: PostsSort
   q: string
@@ -58,7 +58,8 @@ function parseCustom(from: string | undefined, to: string | undefined): DateRang
 
 /**
  * Read `?view=&range=&from=&to=&sort=&q=&page=`; anything unknown falls back
- * to the default. Valid from/to (YYYY-MM-DD, IST, inclusive) win over range.
+ * to the default. Valid from/to (YYYY-MM-DD in the settings timezone,
+ * inclusive) win over range.
  */
 export function parsePostsParams(params: SearchParams): PostsParams {
   const page = Number.parseInt(first(params.page) ?? "", 10)
@@ -84,7 +85,7 @@ function subtractMonths(key: string, months: number): string {
 }
 
 /**
- * First IST date of a range ending today (inclusive): 30d is today and the
+ * First local date of a range ending today (inclusive): 30d is today and the
  * 29 days before it, 3m is e.g. 25 Jul to 24 Oct. `all` returns null; the
  * caller uses the earliest matching post.
  */

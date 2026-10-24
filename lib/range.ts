@@ -1,6 +1,6 @@
-import { addDays, istDateKey } from "@/lib/dates"
+import { addDays } from "@/lib/dates"
 
-/** Inclusive range of IST calendar dates, as YYYY-MM-DD keys. */
+/** Inclusive range of calendar dates in the settings timezone, as YYYY-MM-DD keys. */
 export type DateRangeKeys = { from: string; to: string }
 
 export const DEFAULT_RANGE_DAYS = 30
@@ -13,8 +13,8 @@ export function isDateKey(value: unknown): value is string {
   return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === value
 }
 
-/** The last `days` days ending on `end` (today in IST by default). */
-export function lastDays(days: number, end: string = istDateKey()): DateRangeKeys {
+/** The last `days` days ending on `end` (usually today in the settings timezone). */
+export function lastDays(days: number, end: string): DateRangeKeys {
   return { from: addDays(end, -(days - 1)), to: end }
 }
 
@@ -29,12 +29,13 @@ type SearchParams = Record<string, string | string[] | undefined>
 const first = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v)
 
 /**
- * Read `?from=YYYY-MM-DD&to=YYYY-MM-DD` (IST dates). Anything malformed,
- * reversed, or ending in the future falls back to the default range.
+ * Read `?from=YYYY-MM-DD&to=YYYY-MM-DD` (dates in the settings timezone).
+ * Anything malformed, reversed, or ending after `today` falls back to the
+ * default range.
  */
 export function parseRange(
   params: SearchParams,
-  today: string = istDateKey()
+  today: string
 ): DateRangeKeys & { isDefault: boolean } {
   const from = first(params.from)
   const to = first(params.to)

@@ -1,14 +1,14 @@
-import { and, eq, gte, lt, sql } from "drizzle-orm"
+import { and, eq, gte, lt } from "drizzle-orm"
 import { connection } from "next/server"
 import { cache } from "react"
 
-import { addDays } from "@/lib/dates"
 import { db } from "@/lib/db/client"
 import { posts } from "@/lib/db/schema"
-import { rangeDays } from "@/lib/range"
+import { countActivityByDay, type ActivityDay } from "@/lib/insights/daily"
+import { zonedDays } from "@/lib/insights/zoned"
 
-/** One IST calendar day: posts = originals + quotes, replies = replies Thor made. */
-export type ActivityDay = { date: string; posts: number; replies: number }
+/** One local calendar day: posts = originals + quotes, replies = replies Thor made. */
+export type { ActivityDay }
 
 export type ActivityData = {
   range: { from: string; to: string }
@@ -18,38 +18,17 @@ export type ActivityData = {
   hasReplies: boolean
 }
 
-/** UTC ISO instant for 00:00 IST on a YYYY-MM-DD key (matches lib/queries.ts). */
-const istMidnight = (key: string) =>
-  new Date(`${key}T00:00:00+05:30`).toISOString()
-
-/** IST calendar day of a stored UTC ISO created_at. */
-const istDay = sql<string>`date(${posts.createdAt}, '+5 hours', '+30 minutes')`
-
-async function loadActivityData(from: string, to: string): Promise<ActivityData> {
+async function loadActivityData(from: string, to: string, timeZone: string): Promise<ActivityData> {
   // The DB changes outside the build, so read it per request.
   await connection()
 
+  const { start, end } = zonedDays(from, to, timeZone)
   const rows = await db
-    .select({
-      date: istDay,
-      posts: sql<number>`sum(case when ${posts.type} in ('original', 'quote') then 1 else 0 end)`,
-      replies: sql<number>`sum(case when ${posts.type} = 'reply' then 1 else 0 end)`,
-    })
+    .select({ createdAt: posts.createdAt, type: posts.type })
     .from(posts)
-    .where(
-      and(
-        gte(posts.createdAt, istMidnight(from)),
-        lt(posts.createdAt, istMidnight(addDays(to, 1)))
-      )
-    )
-    .groupBy(istDay)
+    .where(and(gte(posts.createdAt, start), lt(posts.createdAt, end)))
 
-  const byDate = new Map(rows.map((r) => [r.date, r]))
-  const days = Array.from({ length: rangeDays({ from, to }) }, (_, i) => {
-    const date = addDays(from, i)
-    const r = byDate.get(date)
-    return { date, posts: Number(r?.posts ?? 0), replies: Number(r?.replies ?? 0) }
-  })
+  const days = countActivityByDay(rows, from, to, timeZone)
 
   const totals = days.reduce(
     (acc, d) => ({ posts: acc.posts + d.posts, replies: acc.replies + d.replies }),
@@ -65,5 +44,5 @@ async function loadActivityData(from: string, to: string): Promise<ActivityData>
   return { range: { from, to }, days, totals, hasReplies: Boolean(any) }
 }
 
-/** Per-day post and reply counts over an inclusive IST range, zero-filled. */
+/** Per-day post and reply counts over an inclusive local-date range, zero-filled. */
 export const getActivityData = cache(loadActivityData)

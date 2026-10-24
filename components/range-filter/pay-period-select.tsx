@@ -22,21 +22,24 @@ import {
   payPeriodRangeLabel,
   type PayPeriod,
 } from "@/lib/pay-periods"
+import type { PayPeriodSettings } from "@/lib/settings"
 
 function PeriodItem({
   period,
+  payPeriod,
   today,
   selected,
 }: {
   period: PayPeriod
+  payPeriod: PayPeriodSettings
   today: string
   selected: boolean
 }) {
-  const payout = payoutLabel(period, today)
+  const payout = payoutLabel(period, today, payPeriod)
   return (
     <SelectItem
       value={period.from}
-      textValue={payPeriodLabel(period)}
+      textValue={payPeriodLabel(period, payPeriod)}
       className="t-period-item gap-3 py-2 pr-2.5 pl-2.5"
     >
       <span className="flex min-w-0 flex-1 flex-col gap-0.5">
@@ -64,12 +67,15 @@ function PeriodItem({
  */
 export function PayPeriodSelect({
   periods,
+  payPeriod,
   from,
   to,
   today,
   dataMax,
 }: {
   periods: PayPeriod[]
+  /** Pay-period settings (anchor, length, payout offset). */
+  payPeriod: PayPeriodSettings
   from: string
   to: string
   today: string
@@ -94,7 +100,7 @@ export function PayPeriodSelect({
         <Button
           variant="outline"
           className="w-full justify-start tabular-nums sm:w-auto"
-          aria-label={`Payout period: ${match ? payPeriodLabel(match) : "Custom range"}`}
+          aria-label={`Payout period: ${match ? payPeriodLabel(match, payPeriod) : "Custom range"}`}
           data-pending={isPending || undefined}
         >
           <WalletIcon data-icon="inline-start" className="text-muted-foreground" />
@@ -120,7 +126,13 @@ export function PayPeriodSelect({
       >
         <SelectGroup>
           {periods.map((p) => (
-            <PeriodItem key={p.from} period={p} today={today} selected={p.from === match?.from} />
+            <PeriodItem
+              key={p.from}
+              period={p}
+              payPeriod={payPeriod}
+              today={today}
+              selected={p.from === match?.from}
+            />
           ))}
         </SelectGroup>
       </SelectContent>

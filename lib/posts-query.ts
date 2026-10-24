@@ -1,7 +1,7 @@
 import { and, desc, gte, inArray, lt, lte, sql } from "drizzle-orm"
 import { connection } from "next/server"
 
-import { addDays, istDateKey } from "@/lib/dates"
+import { addDays, dateKeyIn, zonedDayStartUtc } from "@/lib/dates"
 import { db } from "@/lib/db/client"
 import { posts, type DashboardPost } from "@/lib/db/schema"
 import {
@@ -11,9 +11,6 @@ import {
   type PostsParams,
 } from "@/lib/posts-params"
 
-/** UTC ISO instant for 00:00 IST on a YYYY-MM-DD key. */
-const istMidnight = (key: string) => new Date(`${key}T00:00:00+05:30`).toISOString()
-
 const escapeLike = (s: string) => s.replace(/[\\%_]/g, (c) => `\\${c}`)
 
 export type PostsPage = {
@@ -21,19 +18,20 @@ export type PostsPage = {
   total: number
   page: number
   pageCount: number
-  /** IST date keys for the label; null `from` when nothing matches the type. */
+  /** Local date keys for the label; null `from` when nothing matches the type. */
   range: { from: string | null; to: string }
 }
 
 /**
- * One page of posts for the URL params. Fully dynamic: `connection()` opts
- * the caller out of prerendering and caching, and "now", "today" and the
- * all-time start (MIN created_at) are all read here, per request.
+ * One page of posts for the URL params, with dates in `timeZone` (the
+ * settings timezone). Fully dynamic: `connection()` opts the caller out of
+ * prerendering and caching, and "now", "today" and the all-time start
+ * (MIN created_at) are all read here, per request.
  */
-export async function getPostsPage(params: PostsParams): Promise<PostsPage> {
+export async function getPostsPage(params: PostsParams, timeZone: string): Promise<PostsPage> {
   await connection()
   const now = new Date()
-  const today = istDateKey(now)
+  const today = dateKeyIn(now, timeZone)
   const types = POSTS_VIEW_TYPES[params.view]
   const byType = inArray(posts.type, types)
 
@@ -46,14 +44,14 @@ export async function getPostsPage(params: PostsParams): Promise<PostsPage> {
       .select({ min: sql<string | null>`min(${posts.createdAt})` })
       .from(posts)
       .where(byType)
-    from = min ? istDateKey(new Date(min)) : null
+    from = min ? dateKeyIn(new Date(min), timeZone) : null
   }
 
   const where = and(
     byType,
-    startKey ? gte(posts.createdAt, istMidnight(startKey)) : undefined,
-    // Custom `to` is inclusive: up to the end of that IST day.
-    custom ? lt(posts.createdAt, istMidnight(addDays(custom.to, 1))) : undefined,
+    startKey ? gte(posts.createdAt, zonedDayStartUtc(startKey, timeZone)) : undefined,
+    // Custom `to` is inclusive: up to the end of that local day.
+    custom ? lt(posts.createdAt, zonedDayStartUtc(addDays(custom.to, 1), timeZone)) : undefined,
     // Never past now, so a future `to` reads as today.
     lte(posts.createdAt, now.toISOString()),
     params.q

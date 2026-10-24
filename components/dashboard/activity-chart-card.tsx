@@ -252,7 +252,7 @@ export function ActivityChartCard({ data }: { data: ActivityData }) {
   )
 
   return (
-    <Card className="t-rise" style={{ "--i": 7 } as React.CSSProperties}>
+    <Card className="t-rise" style={{ "--i": 8 } as React.CSSProperties}>
       <CardHeader>
         <CardTitle>Posts and replies</CardTitle>
         <CardDescription className="flex flex-wrap items-center gap-2">

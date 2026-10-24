@@ -12,7 +12,7 @@ import {
 import type { DashboardPost } from "@/lib/db/schema"
 import { formatCompact, formatNumber, formatPostDate } from "@/lib/format"
 
-export function TopPostsTable({ posts }: { posts: DashboardPost[] }) {
+export function TopPostsTable({ posts, timeZone }: { posts: DashboardPost[]; timeZone: string }) {
   return (
     <Table>
       <TableHeader>
@@ -51,7 +51,7 @@ export function TopPostsTable({ posts }: { posts: DashboardPost[] }) {
                     <span className="sm:hidden">
                       <PostTypeBadge type={post.type} />
                     </span>
-                    {formatPostDate(post.createdAt)}
+                    {formatPostDate(post.createdAt, timeZone)}
                     {post.url && !isSample ? (
                       <a
                         href={post.url}

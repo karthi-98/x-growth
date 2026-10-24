@@ -1,6 +1,6 @@
 import { Suspense } from "react"
 
-import { Dashboard, DataStatus } from "@/components/dashboard/dashboard"
+import { Dashboard, DashboardFootnote, DataStatus } from "@/components/dashboard/dashboard"
 import { DashboardSkeleton } from "@/components/dashboard/dashboard-skeleton"
 import {
   FilterTransitionProvider,
@@ -47,9 +47,9 @@ export default function Home({ searchParams }: PageProps<"/">) {
 
         <Separator />
         <footer className="text-xs text-muted-foreground">
-          Post metrics from the X API (public metrics). Includes your posts,
-          replies and quotes; reposts excluded. Daily totals sum each post&apos;s lifetime numbers on the day
-          it was posted. Dates in IST.
+          <Suspense fallback={null}>
+            <DashboardFootnote />
+          </Suspense>
         </footer>
       </div>
     </FilterTransitionProvider>

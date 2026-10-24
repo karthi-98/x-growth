@@ -1,16 +1,17 @@
-import { and, asc, desc, gte, like, lt, lte, ne, sql } from "drizzle-orm"
+import { and, desc, gte, like, lt, ne, sql } from "drizzle-orm"
 import { connection } from "next/server"
 import { cache } from "react"
 
-import { addDays, istDateKey } from "@/lib/dates"
+import { addDays, dateKeyIn } from "@/lib/dates"
 import { db } from "@/lib/db/client"
 import {
-  dailyStats,
   posts,
   postTypes,
   type DashboardPost,
   type PostType,
 } from "@/lib/db/schema"
+import { sumByPostDay, totalsByType } from "@/lib/insights/daily"
+import { zonedDays } from "@/lib/insights/zoned"
 import { rangeDays } from "@/lib/range"
 
 export const metricKeys = [
@@ -35,6 +36,7 @@ export type DashboardData = {
   days: number
   range: { from: string; to: string }
   metrics: MetricSummary[]
+  /** Lifetime numbers summed on each post's local post date. */
   series: { date: string; impressions: number; likes: number }[]
   byType: { type: PostType; impressions: number; posts: number }[]
   topPosts: DashboardPost[]
@@ -43,15 +45,11 @@ export type DashboardData = {
   updatedAt: string | null
 }
 
-/** UTC ISO instant for 00:00 IST on a YYYY-MM-DD key. */
-const istMidnight = (key: string) =>
-  new Date(`${key}T00:00:00+05:30`).toISOString()
-
 /** Reposts are stored but never counted anywhere on the dashboard. */
 const notRepost = ne(posts.type, "repost")
 
-/** First and last IST post dates (reposts excluded), null when empty. */
-async function loadDataBounds(): Promise<{ min: string; max: string } | null> {
+/** First and last local post dates (reposts excluded), null when empty. */
+async function loadDataBounds(timeZone: string): Promise<{ min: string; max: string } | null> {
   await connection()
   const [row] = await db
     .select({
@@ -61,85 +59,72 @@ async function loadDataBounds(): Promise<{ min: string; max: string } | null> {
     .from(posts)
     .where(notRepost)
   if (!row?.min || !row.max) return null
-  return { min: istDateKey(new Date(row.min)), max: istDateKey(new Date(row.max)) }
+  return { min: dateKeyIn(new Date(row.min), timeZone), max: dateKeyIn(new Date(row.max), timeZone) }
 }
 export const getDataBounds = cache(loadDataBounds)
 
-async function loadDashboardData(from: string, to: string): Promise<DashboardData> {
+/**
+ * Dashboard numbers for an inclusive range of local dates. Days are bucketed
+ * from `posts` in `timeZone` (daily_stats is keyed by IST dates, so it can't
+ * serve other zones), with the previous period of equal length for deltas.
+ */
+async function loadDashboardData(from: string, to: string, timeZone: string): Promise<DashboardData> {
   // The DB changes outside the build, so read it per request.
   await connection()
 
   const days = rangeDays({ from, to })
   const prevStart = addDays(from, -days)
-  const prevEnd = addDays(from, -1)
+  const span = zonedDays(prevStart, to, timeZone)
+  const current = zonedDays(from, to, timeZone)
 
   const rows = await db
-    .select()
-    .from(dailyStats)
-    .where(and(gte(dailyStats.date, prevStart), lte(dailyStats.date, to)))
-    .orderBy(asc(dailyStats.date))
+    .select({
+      createdAt: posts.createdAt,
+      type: posts.type,
+      impressions: posts.impressions,
+      likes: posts.likes,
+      replies: posts.replies,
+      bookmarks: posts.bookmarks,
+    })
+    .from(posts)
+    .where(and(notRepost, gte(posts.createdAt, span.start), lt(posts.createdAt, span.end)))
 
-  const [{ earliest }] = await db
-    .select({ earliest: sql<string | null>`min(${dailyStats.date})` })
-    .from(dailyStats)
+  const daily = sumByPostDay(rows, span)
+  const previousDays = daily.slice(0, days)
+  const currentDays = daily.slice(days)
+
   // Only compare when stored data reaches back over the whole previous period.
-  const hasPrevious = earliest !== null && earliest <= prevStart
-
-  const sum = (key: MetricKey, a: string, b: string) =>
-    rows
-      .filter((d) => d.date >= a && d.date <= b)
-      .reduce((acc, d) => acc + d[key], 0)
+  const bounds = await getDataBounds(timeZone)
+  const hasPrevious = bounds !== null && bounds.min <= prevStart
 
   const metrics = metricKeys.map((key) => {
-    const current = sum(key, from, to)
-    const previous = hasPrevious ? sum(key, prevStart, prevEnd) : null
+    const sum = (list: typeof daily) => list.reduce((acc, d) => acc + d[key], 0)
+    const value = sum(currentDays)
+    const previous = hasPrevious ? sum(previousDays) : null
     return {
       key,
-      current,
+      current: value,
       previous,
-      change: previous ? (current - previous) / previous : null,
+      change: previous ? (value - previous) / previous : null,
     }
   })
 
-  const byDate = new Map(rows.map((d) => [d.date, d]))
-  const series = Array.from({ length: days }, (_, i) => {
-    const date = addDays(from, i)
-    const d = byDate.get(date)
-    return { date, impressions: d?.impressions ?? 0, likes: d?.likes ?? 0 }
-  })
+  const series = currentDays.map(({ date, impressions, likes }) => ({ date, impressions, likes }))
 
-  const inRange = and(
-    notRepost,
-    gte(posts.createdAt, istMidnight(from)),
-    lt(posts.createdAt, istMidnight(addDays(to, 1)))
-  )
-
-  const typeRows = await db
-    .select({
-      type: posts.type,
-      impressions: sql<number>`coalesce(sum(${posts.impressions}), 0)`,
-      posts: sql<number>`count(*)`,
-    })
-    .from(posts)
-    .where(inRange)
-    .groupBy(posts.type)
-
+  const typeTotals = totalsByType(rows, current)
   const byType = postTypes
-    .map((type) => {
-      const row = typeRows.find((r) => r.type === type)
-      return {
-        type,
-        impressions: Number(row?.impressions ?? 0),
-        posts: Number(row?.posts ?? 0),
-      }
-    })
+    .map((type) => ({
+      type,
+      impressions: typeTotals.get(type)?.impressions ?? 0,
+      posts: typeTotals.get(type)?.posts ?? 0,
+    }))
     .filter((t) => t.type !== "reply" || t.posts > 0)
 
-  // inRange excludes reposts, so every row is a dashboard type.
+  // The range excludes reposts, so every row is a dashboard type.
   const topPosts = (await db
     .select()
     .from(posts)
-    .where(inRange)
+    .where(and(notRepost, gte(posts.createdAt, current.start), lt(posts.createdAt, current.end)))
     .orderBy(desc(posts.impressions))
     .limit(10)) as DashboardPost[]
 

@@ -17,10 +17,11 @@ import { accountLabel } from "@/lib/settings"
 async function ShellWithState({ children }: { children: React.ReactNode }) {
   const store = await cookies()
   const defaultOpen = store.get("sidebar_state")?.value !== "false"
-  const [bounds, settings] = await Promise.all([getDataBounds(), getSettings()])
+  const settings = await getSettings()
+  const bounds = await getDataBounds(settings.timeZone)
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
-      <AppSidebar minKey={bounds?.min ?? null} account={accountLabel(settings)} />
+      <AppSidebar minKey={bounds?.min ?? null} account={accountLabel(settings)} timeZone={settings.timeZone} />
       <SidebarInset className="min-w-0">
         <AppTopbar
           status={
