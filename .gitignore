@@ -40,11 +40,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# local sqlite database
-data/*.db
-data/*.db-journal
-data/*.db-wal
-data/*.db-shm
-
-# raw X API exports
-data/imports/
+# local data: database, backups, inbox, secrets, raw X exports
+/data/

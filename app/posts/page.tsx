@@ -12,9 +12,10 @@ import {
   PendingArea,
 } from "@/components/range-filter/filter-transition"
 import { Separator } from "@/components/ui/separator"
+import { APP_NAME } from "@/lib/app"
 
 export const metadata: Metadata = {
-  title: "Posts \u00b7 X Stats",
+  title: `Posts \u00b7 ${APP_NAME}`,
   description: "Browse posts and replies with search, filters and metrics",
 }
 

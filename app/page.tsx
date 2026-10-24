@@ -8,6 +8,12 @@ import {
 } from "@/components/range-filter/filter-transition"
 import { RangeFilter, RangeFilterFallback } from "@/components/range-filter/range-filter"
 import { Separator } from "@/components/ui/separator"
+import { getSettings } from "@/lib/get-settings"
+import { accountLabel } from "@/lib/settings"
+
+async function AccountTitle() {
+  return <>{accountLabel(await getSettings())}</>
+}
 
 export default function Home({ searchParams }: PageProps<"/">) {
   return (
@@ -17,7 +23,11 @@ export default function Home({ searchParams }: PageProps<"/">) {
             since the sidebar narrows the content area). */}
         <header className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="flex min-w-0 flex-col gap-1.5">
-            <h1 className="text-2xl font-semibold tracking-tight">@designwkarthick</h1>
+            <h1 className="text-2xl font-semibold tracking-tight">
+              <Suspense fallback={" "}>
+                <AccountTitle />
+              </Suspense>
+            </h1>
             <Suspense fallback={<span className="h-5" />}>
               <DataStatus searchParams={searchParams} />
             </Suspense>

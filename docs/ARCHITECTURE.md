@@ -384,12 +384,11 @@ Secrets are never sent to the browser. The UI only shows the last 4 characters.
 
 Each phase ends with something the user can run.
 
-**Phase 0: Foundation (this repo)**
-- `git init` and a first commit.
-- Wire up `lib/config.ts`, which isn't imported anywhere and imports `DEFAULT_TIME_ZONE` and `isValidTimeZone`, which `lib/dates.ts` doesn't export. Then replace the hardcoded `@designwkarthick` (5 files) and IST (about 7 places) with settings.
-- `settings` and `accounts` tables, plus `posts.account_id`.
-- Fix the README, which still says replies are excluded and only the last 30 days are stored.
-- **Done when:** the app works for any handle and timezone set in `settings`.
+**Phase 0: Foundation** *(done on `main`; see [WORKSTREAMS.md](WORKSTREAMS.md))*
+- Git repo ([karthi-98/x-growth](https://github.com/karthi-98/x-growth)).
+- Every table in section 7, in one migration. `lib/settings.ts` replaced the old, unused `lib/config.ts`. Also `lib/secrets.ts`, `lib/spend.ts`, `lib/paths.ts`, and timezone helpers in `lib/dates.ts`.
+- Bot↔app contract types (`lib/contract/envelope.ts`), the `xstats` CLI and worker skeletons, the nav, and stub pages and settings sections, one owner each.
+- The handle now comes from settings. IST is still used in the analytics queries; the analytics workstream moves them to `settings.timeZone`.
 
 **Phase 1: Sync contract**
 - Move the import logic to `lib/import/` and add the envelope v1 validator.

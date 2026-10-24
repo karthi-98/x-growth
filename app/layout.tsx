@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google"
 import { AppShell } from "@/components/app-shell/app-shell"
 import { ThemeProvider } from "@/components/theme-provider"
 import { TooltipProvider } from "@/components/ui/tooltip"
+import { APP_NAME } from "@/lib/app"
 import "./globals.css"
 
 const geistSans = Geist({
@@ -17,8 +18,8 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "X Stats \u00b7 @designwkarthick",
-  description: "Personal X analytics dashboard",
+  title: APP_NAME,
+  description: "Local-first X analytics, scheduling and AI writing",
 }
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

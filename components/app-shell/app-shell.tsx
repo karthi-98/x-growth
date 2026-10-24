@@ -3,8 +3,11 @@ import { Suspense } from "react"
 
 import { AppSidebar } from "@/components/app-shell/app-sidebar"
 import { AppTopbar } from "@/components/app-shell/app-topbar"
+import { SyncStatus } from "@/components/app-shell/sync-status"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
+import { getSettings } from "@/lib/get-settings"
 import { getDataBounds } from "@/lib/queries"
+import { accountLabel } from "@/lib/settings"
 
 /**
  * Reads shadcn's `sidebar_state` cookie on the server so the first paint
@@ -14,12 +17,18 @@ import { getDataBounds } from "@/lib/queries"
 async function ShellWithState({ children }: { children: React.ReactNode }) {
   const store = await cookies()
   const defaultOpen = store.get("sidebar_state")?.value !== "false"
-  const bounds = await getDataBounds()
+  const [bounds, settings] = await Promise.all([getDataBounds(), getSettings()])
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
-      <AppSidebar minKey={bounds?.min ?? null} />
+      <AppSidebar minKey={bounds?.min ?? null} account={accountLabel(settings)} />
       <SidebarInset className="min-w-0">
-        <AppTopbar />
+        <AppTopbar
+          status={
+            <Suspense fallback={null}>
+              <SyncStatus />
+            </Suspense>
+          }
+        />
         {children}
       </SidebarInset>
     </SidebarProvider>

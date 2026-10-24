@@ -7,8 +7,8 @@ import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { activeNavItem } from "@/lib/nav"
 
-/** Slim bar above every page: sidebar toggle (Ctrl/Cmd+B) and page name. */
-export function AppTopbar() {
+/** Slim bar above every page: sidebar toggle (Ctrl/Cmd+B), page name, and a right-aligned status slot. */
+export function AppTopbar({ status }: { status?: React.ReactNode }) {
   const title = activeNavItem(usePathname())?.title
   return (
     <header className="sticky top-0 z-20 flex h-12 shrink-0 items-center gap-2 border-b bg-background/80 px-3 backdrop-blur-md sm:px-4">
@@ -26,6 +26,7 @@ export function AppTopbar() {
           <span className="text-sm font-medium">{title}</span>
         </>
       ) : null}
+      <div className="ml-auto flex items-center gap-2">{status}</div>
     </header>
   )
 }

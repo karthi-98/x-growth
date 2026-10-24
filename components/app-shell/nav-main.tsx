@@ -14,33 +14,40 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { istDateKey } from "@/lib/dates"
-import { activeNavItem, NAV_ITEMS } from "@/lib/nav"
+import { activeNavItem, NAV_GROUPS, NAV_ITEMS, type NavItem } from "@/lib/nav"
 import { navHref } from "@/lib/range-links"
 
-function NavList({ hrefFor }: { hrefFor: (href: "/" | "/posts") => string }) {
+type HrefFor = (item: NavItem) => string
+
+function NavList({ hrefFor }: { hrefFor: HrefFor }) {
   const pathname = usePathname()
   const active = activeNavItem(pathname)
   const { isMobile, setOpenMobile } = useSidebar()
-  return (
-    <SidebarMenu className="gap-1">
-      {NAV_ITEMS.map((item) => {
-        const isActive = active?.href === item.href
-        return (
-          <SidebarMenuItem key={item.href}>
-            <SidebarMenuButton asChild isActive={isActive} tooltip={item.title}>
-              <Link href={hrefFor(item.href)} aria-current={isActive ? "page" : undefined}
-                // Close the mobile drawer once a page is picked.
-                onClick={() => isMobile && setOpenMobile(false)}
-              >
-                <item.icon aria-hidden="true" />
-                <span>{item.title}</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        )
-      })}
-    </SidebarMenu>
-  )
+  return NAV_GROUPS.map((group) => (
+    <SidebarGroup key={group}>
+      <SidebarGroupLabel>{group}</SidebarGroupLabel>
+      <SidebarGroupContent>
+        <SidebarMenu className="gap-1">
+          {NAV_ITEMS.filter((item) => item.group === group).map((item) => {
+            const isActive = active?.href === item.href
+            return (
+              <SidebarMenuItem key={item.href}>
+                <SidebarMenuButton asChild isActive={isActive} tooltip={item.title}>
+                  <Link href={hrefFor(item)} aria-current={isActive ? "page" : undefined}
+                    // Close the mobile drawer once a page is picked.
+                    onClick={() => isMobile && setOpenMobile(false)}
+                  >
+                    <item.icon aria-hidden="true" />
+                    <span>{item.title}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            )
+          })}
+        </SidebarMenu>
+      </SidebarGroupContent>
+    </SidebarGroup>
+  ))
 }
 
 /** Reads the URL so links carry the current date range between pages. */
@@ -48,18 +55,21 @@ function NavListWithParams({ minKey }: { minKey: string | null }) {
   const pathname = usePathname()
   const params = useSearchParams()
   const today = useMemo(() => istDateKey(), [])
-  return <NavList hrefFor={(href) => navHref(href, pathname, params, today, minKey)} />
+  return (
+    <NavList
+      hrefFor={(item) =>
+        item.carriesRange && (item.href === "/" || item.href === "/posts")
+          ? navHref(item.href, pathname, params, today, minKey)
+          : item.href
+      }
+    />
+  )
 }
 
 export function NavMain({ minKey }: { minKey: string | null }) {
   return (
-    <SidebarGroup>
-      <SidebarGroupLabel>Pages</SidebarGroupLabel>
-      <SidebarGroupContent>
-        <Suspense fallback={<NavList hrefFor={(href) => href} />}>
-          <NavListWithParams minKey={minKey} />
-        </Suspense>
-      </SidebarGroupContent>
-    </SidebarGroup>
+    <Suspense fallback={<NavList hrefFor={(item) => item.href} />}>
+      <NavListWithParams minKey={minKey} />
+    </Suspense>
   )
 }

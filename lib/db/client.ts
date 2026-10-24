@@ -1,10 +1,11 @@
 import { createClient, type Client } from "@libsql/client"
 import { drizzle } from "drizzle-orm/libsql"
 
+import { paths } from "../paths"
 import * as schema from "./schema"
 
 /** Relative to the project root (where `bun dev` and the scripts run). */
-export const DATABASE_URL = process.env.DATABASE_URL ?? "file:data/x-stats.db"
+export const DATABASE_URL = process.env.DATABASE_URL ?? `file:${paths.database.replaceAll("\\", "/")}`
 
 const globalForDb = globalThis as unknown as { xStatsClient?: Client }
 
