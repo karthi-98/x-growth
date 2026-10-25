@@ -20,4 +20,6 @@ export const paths = {
   backups: inData("backups"),
   secrets: inData("secrets.json"),
   logs: inData("logs"),
+  /** Style summary and example posts for AI writing (lib/voice). */
+  voiceProfile: inData("voice-profile.json"),
 }
