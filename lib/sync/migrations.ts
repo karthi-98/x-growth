@@ -1,20 +1,21 @@
-import { fileURLToPath } from "node:url"
-
 import { sql } from "drizzle-orm"
 import { readMigrationFiles } from "drizzle-orm/migrator"
 
 import { db } from "../db/client"
+import { getLayout } from "../runtime/layout"
 
 /*
  * Drizzle migrations for the CLI (`xstats setup`, `xstats doctor`). The
- * folder sits next to the app code, wherever the app is installed.
+ * folder sits in the app folder, wherever the app is installed. Resolve it
+ * through the runtime layout, not this file's location: in a release bundle
+ * the CLI is one bundled file at the app root, so a path relative to the
+ * source file points outside the app.
  */
-
-export const MIGRATIONS_FOLDER = fileURLToPath(new URL("../../drizzle", import.meta.url))
+const migrationsFolder = () => getLayout().migrations
 
 /** Migrations in the app that the database hasn't applied yet. */
 export async function pendingMigrations(): Promise<number> {
-  const files = readMigrationFiles({ migrationsFolder: MIGRATIONS_FOLDER })
+  const files = readMigrationFiles({ migrationsFolder: migrationsFolder() })
   let last = 0
   try {
     const rows = await db.all<{ created_at: number | string | null }>(
@@ -32,7 +33,7 @@ export async function applyMigrations(): Promise<number> {
   const pending = await pendingMigrations()
   if (pending > 0) {
     const { migrate } = await import("drizzle-orm/libsql/migrator")
-    await migrate(db, { migrationsFolder: MIGRATIONS_FOLDER })
+    await migrate(db, { migrationsFolder: migrationsFolder() })
   }
   return pending
 }
