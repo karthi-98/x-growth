@@ -10,8 +10,8 @@ is listed under **Decides**.
 - Use a test bot (call it "X Growth Spike"), not the one you use day to day. Paste
   [instructions.md](instructions.md) into it and save the skills you need for a spike.
 - Turn on notifications for it.
-- On the PC, make a test inbox: Windows `%LOCALAPPDATA%\XStats\data\inbox`, macOS
-  `~/Library/Application Support/XStats/data/inbox`. If X Growth isn't installed yet, any empty
+- On the PC, make a test inbox: Windows `%LOCALAPPDATA%\XGrowth\data\inbox`, macOS
+  `~/Library/Application Support/XGrowth/data/inbox`. If X Growth isn't installed yet, any empty
   folder works; where a step says `xstats status --json`, use `Get-ChildItem <inbox>` (Windows)
   or `ls -la <inbox>` (macOS).
 - Test files: the synthetic ones in [fixtures/envelopes/](../../fixtures/envelopes/), or real

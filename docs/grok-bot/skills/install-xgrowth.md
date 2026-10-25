@@ -21,6 +21,14 @@ first step that isn't done. "Recreate the routines" starts at step 8.
    `Asia/Kolkata` or `America/New_York`).
 3. How many reminders a day (default 4, at **08:00, 13:00, 18:00 and 22:00** their time). Custom
    times must be at least 5 minutes apart.
+4. Where to install it. Offer the default and accept a different folder:
+   - Windows: `%LOCALAPPDATA%\XGrowth` (for example `C:\Users\<name>\AppData\Local\XGrowth`)
+   - macOS: `~/Library/Application Support/XGrowth`
+   - Linux: `~/.local/share/XGrowth`
+
+   The app goes in `<folder>\app` and the data in `<folder>\data`. Suggest a folder in their user
+   profile; a protected folder such as `C:\Program Files` won't work, because the installer runs
+   without admin rights. "Default" or no answer means the default.
 
 **Check before starting:** the user's computer shows as connected in the Grok Bot desktop app,
 and **Settings → Computer → Your computer → Execution on this computer** isn't "Never allow". If
@@ -51,37 +59,46 @@ Show the user what you found: "@handle (Name), 1,234 followers, 8,000 posts. Is 
 
 ## Step 2: save the first state
 
-Save `account`, `timezone` and the reminder times in memory and in
-`/workspace/x-growth/state.json` (create the folder).
+Save `account`, `timezone`, the reminder times and the chosen install folder (`installDir`, or
+"default") in memory and in `/workspace/x-growth/state.json` (create the folder).
 
-## Step 3: check the computer (1 approval)
+## Step 3: check the computer and the install folder (1 approval)
 
-Windows (PowerShell):
+Use the user's folder as `<folder>`, or the default for their OS. Windows (PowerShell):
 
 ```powershell
 [Environment]::OSVersion.VersionString; $env:PROCESSOR_ARCHITECTURE; $env:LOCALAPPDATA
+$dir = [Environment]::ExpandEnvironmentVariables('<folder>')   # default: %LOCALAPPDATA%\XGrowth
 Get-Command xstats -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source
-Test-Path "$env:LOCALAPPDATA\XStats\app"
+"installed: $(Test-Path (Join-Path $dir 'app\release.json'))"
+New-Item -ItemType Directory -Force $dir | Out-Null; $t = Join-Path $dir '.write-test'
+Set-Content $t 'ok'; Remove-Item $t; "writable: $dir"
 ```
 
 macOS or Linux:
 
 ```sh
 uname -sm; echo "$HOME"; command -v xstats || true
-ls -d "$HOME/Library/Application Support/XStats/app" 2>/dev/null || true
+dir='<folder>'   # default: "$HOME/Library/Application Support/XGrowth" (macOS) or "$HOME/.local/share/XGrowth" (Linux)
+[ -f "$dir/app/release.json" ] && echo "installed: true" || echo "installed: false"
+mkdir -p "$dir" && touch "$dir/.write-test" && rm "$dir/.write-test" && echo "writable: $dir"
 ```
 
-Save `os` (`windows`, `macos` or `linux`). If `xstats` is found, run `xstats status --json`
-in the next approved command instead of installing, and continue from what it reports.
+Save `os` (`windows`, `macos` or `linux`) and the full folder path as `installDir`.
+
+- If the folder isn't writable (no `writable:` line, or an access-denied error), tell the user and
+  ask for another folder, suggesting the default. Don't install there.
+- If X Growth is already installed there (`installed: true`) or `xstats` is found, run
+  `xstats status --json` in the next approved command instead of installing, and continue from
+  what it reports. Offer `xgrowth-update` if they wanted a newer version.
 
 ## Step 4: install (1 approval)
 
 The app is released on GitHub (`karthi-98/x-growth`) with one bundle per OS and CPU (`win-x64`,
 `mac-arm64`, `mac-x64`, `linux-x64`), each with a SHA-256 checksum, plus an installer script.
 The installer installs Bun if it's missing, downloads and checks the bundle, unpacks it to the
-install folder (Windows `%LOCALAPPDATA%\XStats\app`, macOS
-`~/Library/Application Support/XStats/app`), keeps data in a separate `…\XStats\data` folder, and
-prints where `xstats` is.
+install folder (`<installDir>\app`), keeps data in a separate `<installDir>\data` folder, and
+prints where `xstats` is. Always pass the folder from step 3, even when it's the default.
 
 Windows (PowerShell):
 
@@ -95,7 +112,7 @@ Invoke-WebRequest "$base/SHA256SUMS" -OutFile "$tmp\SHA256SUMS" -UseBasicParsing
 $want = ((Get-Content "$tmp\SHA256SUMS" | Where-Object { $_ -match '\sinstall\.ps1$' }) -split '\s+')[0]
 $got = (Get-FileHash "$tmp\install.ps1" -Algorithm SHA256).Hash.ToLower()
 if ($got -ne $want) { throw "install.ps1 checksum mismatch" }
-powershell -NoProfile -ExecutionPolicy Bypass -File "$tmp\install.ps1"
+powershell -NoProfile -ExecutionPolicy Bypass -File "$tmp\install.ps1" -InstallDir '<installDir>' -Json
 ```
 
 macOS or Linux:
@@ -108,13 +125,14 @@ curl -fsSL "$base/install.sh" -o "$tmp/install.sh"
 curl -fsSL "$base/SHA256SUMS" -o "$tmp/SHA256SUMS"
 cd "$tmp" && grep ' install.sh$' SHA256SUMS > want.txt
 sha256sum -c want.txt 2>/dev/null || shasum -a 256 -c want.txt
-sh "$tmp/install.sh"
+sh "$tmp/install.sh" --install-dir '<installDir>' --json
 ```
 
 (`-ExecutionPolicy Bypass` applies to that one PowerShell process only; it changes no setting.)
 
-From the installer's output, save `cli`: the exact command that runs `xstats` (just `xstats` if it
-is on the PATH, otherwise its full path, quoted). If the installer fails, show its last lines,
+The installer's last line is one JSON object. Save `cli` from it: the exact command that runs
+`xstats` (just `xstats` if it is on the PATH, otherwise its full path, quoted). Also save `inbox`
+from it; step 5 confirms it. If the installer fails, show its last lines,
 don't retry more than once, and suggest the manual steps in the user guide.
 
 ## Step 5: set up and start (1 approval)
@@ -199,7 +217,7 @@ The install is done when all of these are true:
 - `xstats status --json` reports the app running and the right handle.
 - The backfill import returned `ok` or `partial`, and you saved its `next`.
 - The routines exist and **When to run** shows the right times and timezone.
-- Your state has `account`, `timezone`, `os`, `cli`, `inbox` and `next`.
+- Your state has `account`, `timezone`, `os`, `installDir`, `cli`, `inbox` and `next`.
 
 Then report:
 

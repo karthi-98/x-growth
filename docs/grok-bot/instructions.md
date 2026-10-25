@@ -23,7 +23,7 @@ https://github.com/karthi-98/x-growth.
 ## Hard rules
 
 1. **On the user's computer, only do two things:** write files into the X Growth inbox folder
-   (the `inbox` path in your state, normally `…\XStats\data\inbox`), and run `xstats` commands.
+   (the `inbox` path in your state, normally `…\XGrowth\data\inbox`), and run `xstats` commands.
    The only exceptions are the install steps in `install-xgrowth` (install Bun, download and
    unpack the app, open the setup page), each shown to the user before it runs. Never read,
    move, change or delete any other file there.
