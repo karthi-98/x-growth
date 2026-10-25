@@ -34,6 +34,7 @@
 import { mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs"
 import path from "node:path"
 
+import { BOT_PACK_VERSION } from "../lib/bot-pack"
 import { flagString, parseArgs } from "../cli/util"
 import {
   EXPORT_FORMAT,
@@ -337,7 +338,7 @@ parts.forEach((part, i) => {
     format: EXPORT_FORMAT,
     version: EXPORT_VERSION,
     kind,
-    run: { id, type, trigger, source: "simulate-bot" },
+    run: { id, type, trigger, source: "simulate-bot", bot_pack: BOT_PACK_VERSION },
     fetched_at: fetchedAt,
     account,
     window: { start_time: isoSeconds(part.start), end_time: isoSeconds(part.end) },

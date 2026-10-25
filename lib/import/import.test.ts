@@ -264,4 +264,21 @@ describe("import pipeline", () => {
     expect(res.result.status).toBe("empty")
     expect(res.result.next.type).toBeOneOf(["full", "light", "catch-up"])
   })
+  test("records the bot pack version and reports it back for the bot", async () => {
+    const env = (id: string, botPack?: number) =>
+      testEnvelope({
+        run: { id, type: "light", trigger: "schedule", source: "test", ...(botPack ? { bot_pack: botPack } : {}) },
+        fetched_at: at(-HOUR),
+        window: { start_time: at(-3 * HOUR), end_time: at(-HOUR) },
+      })
+    drop(env("rpack1"))
+    let res = await importNow()
+    expect(res.result.app.version).toMatch(/^\d+\.\d+\.\d+/)
+    expect(res.result.app.bot_pack).toMatchObject({ seen: null, outdated: true })
+
+    drop(env("rpack2", 2))
+    res = await importNow()
+    expect(res.result.app.bot_pack).toMatchObject({ seen: 2, outdated: false })
+    expect((await readSettings()).botPack.version).toBe(2)
+  })
 })

@@ -11,8 +11,9 @@ Plan and contract: [ARCHITECTURE.md](../ARCHITECTURE.md) sections 4, 5, 6 and 13
 | File | What it is | Who uses it |
 |---|---|---|
 | [instructions.md](instructions.md) | The bot's standing rules, ready to paste into the bot's instructions | Bot author |
-| [skills/](skills/) | One file per skill, each ready to save as a Grok Bot skill | Bot author, and the bot itself (self-repair) |
-| [routines.md](routines.md) | The 4 daily routines and the optional webhook "Sync now" routine | The install skill, bot author |
+| [stubs.md](stubs.md) | The six short skill stubs users save in Grok Bot | Bot author, and the bot itself (self-update) |
+| [skills/](skills/) | The full skills, published with every release; the bot downloads them as it runs | The bot (via **Loading skills**), reviewers |
+| [routines.md](routines.md) | The 4 daily sync routines, the weekly update check, and the optional webhook "Sync now" routine | The install skill, bot author |
 | [template.md](template.md) | How to publish the bot as a shared template link | Bot author |
 | [user-guide.md](user-guide.md) | Plain-English onboarding and troubleshooting | End users |
 | [spikes.md](spikes.md) | Test scripts and result templates for spikes S1–S5 and S8 | Bot author, before release |
@@ -94,9 +95,26 @@ only words, and every piece of logic that has to be exact lives in the app.
 | Where to find everything else: this repo, which is public | Install, autostart, update, backups (`xstats` commands and the installer) |
 | | Keys (`data/secrets.json`) and every call that uses them |
 
-Because skills might not be copied with the template (they may count as private skills), the
-instructions tell the bot to re-create any missing skill from this folder on GitHub
-(`https://raw.githubusercontent.com/karthi-98/x-growth/main/docs/grok-bot/skills/<name>.md`).
+Because skills might not be copied with the template (they may count as private skills), and so
+that skill fixes reach every user, the bot keeps only short stubs ([stubs.md](stubs.md)) and loads
+each full skill from the GitHub release that matches the installed app, checked against the
+release's `SHA256SUMS` (**Loading skills** in [instructions.md](instructions.md)).
+
+## Update your bot
+
+How changes reach people who already added the bot:
+
+| What changed | How it reaches existing bots | Users do |
+|---|---|---|
+| The app | The weekly **X Growth update check** routine finds the new release and asks once to install it | Approve once |
+| A full skill (`skills/*.md`) | Ships with the app release; bots load skills from the release that matches their installed app | Nothing |
+| The pasted part: [instructions.md](instructions.md) or [stubs.md](stubs.md) | Bump `BOT_PACK_VERSION` (`lib/bot-pack.ts`) and ship a release. The app tells outdated bots in each import result and shows **Update your bot** in the app and in `xstats doctor` | Say **"update yourself from GitHub"** to the bot and confirm |
+
+Bots from before pack 2 (the first template, with full skills pasted in) don't know how to update
+themselves. Once, their users say to the bot: "Replace your instructions with the text below the line
+in https://github.com/karthi-98/x-growth/releases/latest/download/instructions.md, then save each
+skill in https://github.com/karthi-98/x-growth/releases/latest/download/stubs.md". After that,
+everything above applies.
 
 ## The bot's state
 

@@ -16,11 +16,23 @@ export type HealthCopy = {
 const PAUSED_HINT =
   "Grok Bot may pause routines after a quiet stretch: open Grok Bot and resume the X Growth routines."
 
+const BOT_UPDATE_HINT =
+  "Your X Growth Bot runs an older version of its instructions. Ask it to \"update yourself from GitHub\", or paste the latest from docs/grok-bot (see Update your bot there)."
+
 /** Ends with a full stop exactly once. */
 const sentence = (text: string) => (/[.!?]$/.test(text.trim()) ? text.trim() : `${text.trim()}.`)
 
 /** Wording shared by the top-bar chip and Settings > Sync. */
 export function healthCopy(s: SyncStatusInfo, now: Date): HealthCopy {
+  const copy = syncCopy(s, now)
+  // An outdated bot still syncs, so this only takes over the chip when nothing is wrong with the data.
+  if (s.botPack.outdated && copy.tone !== "error") {
+    return { ...copy, tone: "warn", chip: "Update your bot", detail: `${BOT_UPDATE_HINT} ${copy.detail}` }
+  }
+  return copy
+}
+
+function syncCopy(s: SyncStatusInfo, now: Date): HealthCopy {
   const ago = s.syncedAt ? timeAgo(s.syncedAt, now) : null
   const next = s.nextReminderAt ? formatClock(s.nextReminderAt, s.timeZone) : null
   const upTo = s.syncedAt ? ` Data is complete up to ${formatDateTime(s.syncedAt, s.timeZone)}.` : ""

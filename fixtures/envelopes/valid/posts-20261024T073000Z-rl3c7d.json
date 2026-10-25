@@ -6,7 +6,8 @@
     "id": "rl3c7d",
     "type": "light",
     "trigger": "schedule",
-    "source": "grok-bot-x-connector"
+    "source": "grok-bot-x-connector",
+    "bot_pack": 2
   },
   "fetched_at": "2026-10-24T07:30:21Z",
   "account": {
@@ -110,7 +111,7 @@
     },
     {
       "id": "2113887853212598297",
-      "text": "Glad it helped \ud83d\ude80",
+      "text": "Glad it helped 🚀",
       "created_at": "2026-10-24T06:58:33.000Z",
       "conversation_id": "2113883184952246296",
       "in_reply_to_user_id": "1000000000000000002",

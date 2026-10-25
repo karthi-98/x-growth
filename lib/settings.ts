@@ -50,6 +50,8 @@ export type AppSettings = {
   autoPostGraceMinutes: number
   /** Optional monthly spend cap in USD across X writes and AI; null = no cap. */
   monthlySpendCapUsd: number | null
+  /** Last bot pack version seen in an import (lib/bot-pack.ts); written by the import pipeline. */
+  botPack: { version: number | null; seenAt: string | null }
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
@@ -67,6 +69,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   },
   autoPostGraceMinutes: 30,
   monthlySpendCapUsd: null,
+  botPack: { version: null, seenAt: null },
 }
 
 type SettingKey = keyof AppSettings

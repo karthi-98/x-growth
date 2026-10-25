@@ -27,6 +27,8 @@ import {
   type NewSyncRun,
   type Post,
 } from "../db/schema"
+import { botPackStatus, parseBotPack } from "../bot-pack"
+import { appVersion } from "../runtime/layout"
 import { readSettings, updateSettings, type AppSettings, type SyncSettings } from "../settings"
 import { coverageWindows, nextFor, nextRunAt, readSyncState, writeSyncState, type SyncStateRow } from "../sync/state"
 import { computeCoverage, coversBackfill, isFullRefresh, type Coverage, type Interval } from "../sync/window"
@@ -87,6 +89,8 @@ export type FileOutcome = {
   /** True when the file stays where it is and the next import retries it. */
   retry: boolean
   movedTo: string | null
+  /** For envelopes: the bot pack version in `run.bot_pack`, null when absent (pack 1). */
+  botPack: number | null
 }
 
 export type ImportReport = {
@@ -130,6 +134,7 @@ function blankOutcome(file: string): FileOutcome {
     reason: null,
     retry: false,
     movedTo: null,
+    botPack: null,
   }
 }
 
@@ -577,6 +582,7 @@ async function importOne(file: string, ctx: Ctx): Promise<FileOutcome> {
       if (!checked.ok) throw new FileRejected(checked.reason)
       const env = checked.envelope
       out.complete = env.complete
+      out.botPack = parseBotPack(env.run.bot_pack)
       if (!ctx.settings.userId) {
         ctx.settings = await updateSettings({
           userId: env.account.id,
@@ -653,6 +659,18 @@ async function runImport(files: string[], now: Date): Promise<ImportReport> {
   const { state, coverage } = imported.length > 0 ? await db.transaction(update) : await update(db)
   const next = nextFor(settings, state, coverage, nextRunAt(settings, now))
 
+  // Remember which bot pack imported last, so status/doctor can say when the bot needs updating.
+  // Only envelopes come from the bot; a manual import of an older export says nothing about it.
+  let botPack = settings.botPack
+  const fromBot = imported.filter((o) => o.format === "envelope")
+  if (fromBot.length > 0) {
+    const versions = fromBot.map((o) => o.botPack)
+    const version = versions.some((v) => v === null) ? null : Math.max(...(versions as number[]))
+    botPack = { version, seenAt: now.toISOString() }
+    await updateSettings({ botPack })
+  }
+  const pack = botPackStatus(botPack)
+
   const sum = (pick: (o: FileOutcome) => number) => imported.reduce((acc, o) => acc + pick(o), 0)
   const result: ImportResult = {
     status:
@@ -673,8 +691,12 @@ async function runImport(files: string[], now: Date): Promise<ImportReport> {
     gap: coverage.gap,
     next,
     failed: outcomes.filter((o) => o.status === "failed").map((o) => ({ file: o.name, reason: o.reason ?? "" })),
+    app: {
+      version: appVersion(),
+      bot_pack: { seen: pack.seen, required: pack.required, latest: pack.latest, outdated: pack.outdated },
+    },
   }
-  return { result, files: outcomes, coverage, state, settings, pruned: 0 }
+  return { result, files: outcomes, coverage, state, settings: { ...settings, botPack }, pruned: 0 }
 }
 
 export type ImportOptions = {

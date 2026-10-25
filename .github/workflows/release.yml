@@ -130,8 +130,12 @@ jobs:
       - name: Installers and checksums
         run: |
           cp install/install.ps1 install/install.sh dist/
+          # The X Growth Bot loads its skills from the release that matches the installed app
+          # (docs/grok-bot/instructions.md, "Loading skills"), and updates its pasted part from
+          # instructions.md and stubs.md.
+          cp docs/grok-bot/skills/*.md docs/grok-bot/instructions.md docs/grok-bot/stubs.md dist/
           cd dist
-          sha256sum x-growth-* install.ps1 install.sh > SHA256SUMS
+          sha256sum x-growth-* install.ps1 install.sh *.md > SHA256SUMS
           cat SHA256SUMS
 
       - name: Create the draft release

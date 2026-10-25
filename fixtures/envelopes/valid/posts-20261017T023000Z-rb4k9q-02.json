@@ -6,7 +6,8 @@
     "id": "rb4k9q-02",
     "type": "backfill",
     "trigger": "manual",
-    "source": "grok-bot-x-connector"
+    "source": "grok-bot-x-connector",
+    "bot_pack": 2
   },
   "fetched_at": "2026-10-17T02:41:18Z",
   "account": {
@@ -74,7 +75,7 @@
     },
     {
       "id": "2106341285295030282",
-      "text": "Caf\u00e9 notes \u2615: the morning slot wins for me too.",
+      "text": "Café notes ☕: the morning slot wins for me too.",
       "created_at": "2026-10-03T11:11:11.000Z",
       "conversation_id": "2106333437752246281",
       "in_reply_to_user_id": "1000000000000000004",

@@ -6,7 +6,8 @@
     "id": "rl3c7d",
     "type": "light",
     "trigger": "schedule",
-    "source": "grok-bot-x-connector"
+    "source": "grok-bot-x-connector",
+    "bot_pack": 2
   },
   "fetched_at": "2026-10-24T07:30:24Z",
   "account": {
