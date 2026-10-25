@@ -1,23 +1,16 @@
-import { mkdtempSync } from "node:fs"
-import { tmpdir } from "node:os"
-import path from "node:path"
+import { resetTestData, testDataDir } from "@/test/reset"
 
 /*
- * Tests only. Points DATABASE_URL at a fresh temp SQLite file and migrates
- * it, so tests never touch data/x-stats.db. Call it before anything imports
- * lib/db/client (use dynamic imports in the test file).
+ * Tests only. test/setup.ts (preloaded by `bun test`) points DATABASE_URL at
+ * one migrated temp SQLite file for the whole process, so tests never touch
+ * data/x-stats.db. This empties it so the calling test file starts clean.
  */
 export async function useTempDatabase() {
-  if (!process.env.XGROWTH_TEST_DB) {
-    const file = path.join(mkdtempSync(path.join(tmpdir(), "xgrowth-test-")), "test.db")
-    process.env.XGROWTH_TEST_DB = file
-    process.env.DATABASE_URL = `file:${file.replaceAll("\\", "/")}`
-  }
+  testDataDir()
   const { db, DATABASE_URL } = await import("../db/client")
   if (DATABASE_URL !== process.env.DATABASE_URL) {
-    throw new Error(`lib/db/client was loaded with ${DATABASE_URL} before the test database was set up`)
+    throw new Error(`lib/db/client was loaded with ${DATABASE_URL}, not the test database`)
   }
-  const { migrate } = await import("drizzle-orm/libsql/migrator")
-  await migrate(db, { migrationsFolder: path.join(import.meta.dirname, "../../drizzle") })
+  await resetTestData()
   return db
 }

@@ -1,33 +1,18 @@
-import { mkdtempSync } from "node:fs"
-import { tmpdir } from "node:os"
-import path from "node:path"
+import { resetTestData, testDataDir } from "@/test/reset"
 
 /*
- * Test helpers. `useTestDataDir()` points the data folder and database at a
- * fresh temp directory and migrates it, before anything opens the real
- * data/x-stats.db. Test files that touch the DB must import their modules
- * with `await import()` after calling it. Bun runs every test file in one
- * process, so the setup runs once and is shared.
+ * Test helpers. test/setup.ts (preloaded by `bun test`) points the data
+ * folder and database at one migrated temp directory for the whole process.
+ * `useTestDataDir()` empties it so this test file starts clean; call it in
+ * beforeAll, then import modules that touch the DB.
  */
 
 type TestEnv = { dir: string }
-const g = globalThis as unknown as { __xgTestEnv?: Promise<TestEnv>; xStatsClient?: unknown }
 
-export function useTestDataDir(): Promise<TestEnv> {
-  g.__xgTestEnv ??= (async () => {
-    if (g.xStatsClient) throw new Error("The DB client was opened before the test data dir was set up.")
-    const dir = mkdtempSync(path.join(tmpdir(), "x-growth-test-"))
-    process.env.XSTATS_DATA_DIR = dir
-    process.env.DATABASE_URL = `file:${path.join(dir, "test.db").replaceAll("\\", "/")}`
-
-    const { paths } = await import("@/lib/paths")
-    if (paths.data !== dir) throw new Error("lib/paths was loaded before the test data dir was set up.")
-    const { db } = await import("@/lib/db/client")
-    const { migrate } = await import("drizzle-orm/libsql/migrator")
-    await migrate(db, { migrationsFolder: path.join(import.meta.dir, "..", "..", "..", "drizzle") })
-    return { dir }
-  })()
-  return g.__xgTestEnv
+export async function useTestDataDir(): Promise<TestEnv> {
+  const dir = testDataDir()
+  await resetTestData()
+  return { dir }
 }
 
 /** Make any real network call fail loudly (tests pass a mock fetch instead). */

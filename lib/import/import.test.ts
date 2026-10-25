@@ -1,18 +1,17 @@
-import { afterAll, beforeAll, describe, expect, test } from "bun:test"
-import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs"
-import { tmpdir } from "node:os"
+import { beforeAll, describe, expect, test } from "bun:test"
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs"
 import path from "node:path"
+
+import { resetTestData, testDataDir } from "@/test/reset"
 
 import type { ExportEnvelope } from "../contract/envelope"
 import { TEST_USER, testEnvelope, testPost } from "./test-envelopes"
 
 /*
- * Runs the real pipeline against a throwaway data folder. lib/paths and the
- * DB client read XSTATS_DATA_DIR when first loaded, so everything that
- * touches them is imported dynamically after it is set.
+ * Runs the real pipeline against the shared throwaway data folder that
+ * test/setup.ts creates (lib/paths and the DB client already point at it).
  */
-const dataDir = mkdtempSync(path.join(tmpdir(), "xstats-import-test-"))
-process.env.XSTATS_DATA_DIR = dataDir
+const dataDir = testDataDir()
 
 const { sql } = await import("drizzle-orm")
 const { db } = await import("../db/client")
@@ -40,19 +39,11 @@ const stored = async (id: string) =>
   (await db.select().from(schema.posts).where(sql`${schema.posts.id} = ${id}`))[0]
 
 beforeAll(async () => {
+  await resetTestData()
   ensureDataDirs()
   await applyMigrations()
   // A non-IST zone on purpose: days must follow settings.timeZone.
   await updateSettings({ handle: TEST_USER.username, timeZone: "America/New_York" })
-})
-
-afterAll(() => {
-  db.$client.close()
-  try {
-    rmSync(dataDir, { recursive: true, force: true })
-  } catch {
-    // Windows may still hold the file for a moment; it's in the temp folder.
-  }
 })
 
 describe("import pipeline", () => {

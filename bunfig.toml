@@ -1,0 +1,3 @@
+[test]
+# One shared, migrated temp data folder + DB for the whole test process.
+preload = ["./test/setup.ts"]

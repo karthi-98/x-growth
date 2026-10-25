@@ -27,6 +27,7 @@ Other scripts:
 | `bun run worker` | Background jobs: inbox import, publish queue, backups |
 | `bun run xstats start` | After `bun run build`: the production server on 127.0.0.1 plus the worker, as installed copies run it (`--detach` for the background, `xstats stop` to stop) |
 | `bun run db:generate` | Create a new migration after editing `lib/db/schema.ts` |
+| `bun test` | All tests, against one throwaway temp database (never `data/`) |
 | `bun run lint` / `bun run typecheck` / `bun run build` | Checks |
 
 Installing, updates, backups and release builds: [install/README.md](install/README.md).
