@@ -21,6 +21,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Agent session worktrees (each a full checkout with its own .next) and release bundles.
+    ".claude/**",
+    "dist/**",
   ]),
 ]);
 
