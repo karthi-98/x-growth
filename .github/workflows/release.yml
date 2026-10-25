@@ -84,7 +84,16 @@ jobs:
 
       - run: bun run typecheck
 
-      - run: bun run build
+      # lib/db/client.ts opens the database as soon as it loads, and Next loads
+      # it while collecting page data, so the build needs an existing data
+      # folder. Use an empty one outside the project: nothing in it can end up
+      # in a bundle.
+      - name: Build
+        env:
+          XSTATS_DATA_DIR: ${{ runner.temp }}/build-data
+        run: |
+          bun -e 'require("fs").mkdirSync(process.env.XSTATS_DATA_DIR, { recursive: true })'
+          bun run build
 
       - name: Pack
         run: |
