@@ -1,0 +1,119 @@
+{
+  "format": "xstats-export",
+  "version": 1,
+  "kind": "posts",
+  "run": {
+    "id": "rb4k9q-02",
+    "type": "backfill",
+    "trigger": "manual",
+    "source": "grok-bot-x-connector"
+  },
+  "fetched_at": "2026-10-17T02:41:18Z",
+  "account": {
+    "id": "1000000000000000001",
+    "username": "xgrowth_demo",
+    "name": "X Growth Demo",
+    "profile_image_url": "https://example.com/avatars/xgrowth_demo.png",
+    "public_metrics": {
+      "followers_count": 1180,
+      "following_count": 287,
+      "tweet_count": 3212,
+      "listed_count": 12
+    }
+  },
+  "window": {
+    "start_time": "2026-09-02T16:20:44Z",
+    "end_time": "2026-10-17T02:30:00Z"
+  },
+  "complete": true,
+  "rate_limited": false,
+  "errors": [],
+  "data": [
+    {
+      "id": "2095185162269622279",
+      "text": "Same here. Replies brought more profile visits than originals for me.",
+      "created_at": "2026-09-02T16:20:44.000Z",
+      "conversation_id": "2095179441238966278",
+      "in_reply_to_user_id": "1000000000000000003",
+      "referenced_tweets": [
+        {
+          "type": "replied_to",
+          "id": "2095179441238966278"
+        }
+      ],
+      "lang": "en",
+      "public_metrics": {
+        "retweet_count": 0,
+        "reply_count": 0,
+        "like_count": 5,
+        "quote_count": 0,
+        "bookmark_count": 0,
+        "impression_count": 347
+      },
+      "edit_history_tweet_ids": [
+        "2095185162269622279"
+      ]
+    },
+    {
+      "id": "2099726171632566280",
+      "text": "Shipped: best time to post, computed from your own impressions. No guessing.",
+      "created_at": "2026-09-15T05:05:05.000Z",
+      "conversation_id": "2099726171632566280",
+      "lang": "en",
+      "public_metrics": {
+        "retweet_count": 4,
+        "reply_count": 9,
+        "like_count": 52,
+        "quote_count": 1,
+        "bookmark_count": 17,
+        "impression_count": 2730
+      },
+      "edit_history_tweet_ids": [
+        "2099726171632566280"
+      ]
+    },
+    {
+      "id": "2106341285295030282",
+      "text": "Caf\u00e9 notes \u2615: the morning slot wins for me too.",
+      "created_at": "2026-10-03T11:11:11.000Z",
+      "conversation_id": "2106333437752246281",
+      "in_reply_to_user_id": "1000000000000000004",
+      "referenced_tweets": [
+        {
+          "type": "replied_to",
+          "id": "2106333437752246281"
+        }
+      ],
+      "lang": "en",
+      "public_metrics": {
+        "retweet_count": 0,
+        "reply_count": 0,
+        "like_count": 2,
+        "quote_count": 0,
+        "bookmark_count": 0,
+        "impression_count": 158
+      },
+      "edit_history_tweet_ids": [
+        "2106341285295030282"
+      ]
+    },
+    {
+      "id": "2109476271682486283",
+      "text": "Week 12: 1,000 posts imported, zero spreadsheets.",
+      "created_at": "2026-10-12T02:48:30.000Z",
+      "conversation_id": "2109476271682486283",
+      "lang": "en",
+      "public_metrics": {
+        "retweet_count": 1,
+        "reply_count": 3,
+        "like_count": 27,
+        "quote_count": 0,
+        "bookmark_count": 5,
+        "impression_count": 1505
+      },
+      "edit_history_tweet_ids": [
+        "2109476271682486283"
+      ]
+    }
+  ]
+}

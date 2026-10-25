@@ -1,0 +1,135 @@
+{
+  "format": "xstats-export",
+  "version": 1,
+  "kind": "mentions",
+  "run": {
+    "id": "rl3c7d",
+    "type": "light",
+    "trigger": "schedule",
+    "source": "grok-bot-x-connector"
+  },
+  "fetched_at": "2026-10-24T07:30:24Z",
+  "account": {
+    "id": "1000000000000000001",
+    "username": "xgrowth_demo",
+    "name": "X Growth Demo",
+    "profile_image_url": "https://example.com/avatars/xgrowth_demo.png",
+    "public_metrics": {
+      "followers_count": 1207,
+      "following_count": 287,
+      "tweet_count": 3253,
+      "listed_count": 12
+    }
+  },
+  "window": {
+    "start_time": "2026-10-23T07:30:00Z",
+    "end_time": "2026-10-24T07:30:00Z"
+  },
+  "complete": true,
+  "rate_limited": false,
+  "errors": [],
+  "data": [
+    {
+      "id": "2113559552455606298",
+      "text": "@xgrowth_demo how do you decide when to post a thread instead of a single post?",
+      "created_at": "2026-10-23T09:14:00.000Z",
+      "author_id": "1000000000000000002",
+      "conversation_id": "2113559552455606298",
+      "lang": "en",
+      "public_metrics": {
+        "retweet_count": 0,
+        "reply_count": 2,
+        "like_count": 9,
+        "quote_count": 0,
+        "bookmark_count": 0,
+        "impression_count": 530
+      },
+      "edit_history_tweet_ids": [
+        "2113559552455606298"
+      ]
+    },
+    {
+      "id": "2113722815738806299",
+      "text": "@xgrowth_demo the per-day impressions chart is great. Any plans for follower growth?",
+      "created_at": "2026-10-23T20:02:45.000Z",
+      "author_id": "1000000000000000004",
+      "conversation_id": "2113541357564854291",
+      "in_reply_to_user_id": "1000000000000000001",
+      "referenced_tweets": [
+        {
+          "type": "replied_to",
+          "id": "2113541357564854291"
+        }
+      ],
+      "lang": "en",
+      "public_metrics": {
+        "retweet_count": 3,
+        "reply_count": 5,
+        "like_count": 64,
+        "quote_count": 1,
+        "bookmark_count": 8,
+        "impression_count": 2950
+      },
+      "edit_history_tweet_ids": [
+        "2113722815738806299"
+      ]
+    },
+    {
+      "id": "2113876264350646300",
+      "text": "@xgrowth_demo @demo_builder adding this to my morning routine.",
+      "created_at": "2026-10-24T06:12:30.000Z",
+      "author_id": "1000000000000000003",
+      "conversation_id": "2113876264350646300",
+      "lang": "en",
+      "public_metrics": {
+        "retweet_count": 0,
+        "reply_count": 0,
+        "like_count": 2,
+        "quote_count": 0,
+        "bookmark_count": 0,
+        "impression_count": 88
+      },
+      "edit_history_tweet_ids": [
+        "2113876264350646300"
+      ]
+    }
+  ],
+  "users": [
+    {
+      "id": "1000000000000000002",
+      "username": "demo_builder",
+      "name": "Demo Builder",
+      "profile_image_url": "https://example.com/avatars/demo_builder.png",
+      "public_metrics": {
+        "followers_count": 5400,
+        "following_count": 310,
+        "tweet_count": 12800,
+        "listed_count": 41
+      }
+    },
+    {
+      "id": "1000000000000000003",
+      "username": "sample_writer",
+      "name": "Sample Writer",
+      "profile_image_url": "https://example.com/avatars/sample_writer.png",
+      "public_metrics": {
+        "followers_count": 890,
+        "following_count": 402,
+        "tweet_count": 3100,
+        "listed_count": 7
+      }
+    },
+    {
+      "id": "1000000000000000004",
+      "username": "test_founder",
+      "name": "Test Founder",
+      "profile_image_url": "https://example.com/avatars/test_founder.png",
+      "public_metrics": {
+        "followers_count": 23100,
+        "following_count": 120,
+        "tweet_count": 45200,
+        "listed_count": 230
+      }
+    }
+  ]
+}

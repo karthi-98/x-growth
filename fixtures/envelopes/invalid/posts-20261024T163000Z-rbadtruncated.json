@@ -1,0 +1,32 @@
+{
+  "format": "xstats-export",
+  "version": 1,
+  "kind": "posts",
+  "run": {
+    "id": "rbadtruncated",
+    "type": "light",
+    "trigger": "schedule",
+    "source": "grok-bot-x-connector"
+  },
+  "fetched_at": "2026-10-24T16:30:12Z",
+  "account": {
+    "id": "1000000000000000001",
+    "username": "xgrowth_demo",
+    "name": "X Growth Demo",
+    "profile_image_url": "https://example.com/avatars/xgrowth_demo.png",
+    "public_metrics": {
+      "followers_count": 1210,
+      "following_count": 287,
+      "tweet_count": 3257,
+      "listed_count": 12
+    }
+  },
+  "window": {
+    "start_time": "2026-10-23T16:30:00Z",
+    "end_time": "2026-10-24T16:30:00Z"
+  },
+  "complete": true,
+  "rate_limited": false,
+  "errors": [],
+  "data": [
+    

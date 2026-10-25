@@ -1,0 +1,196 @@
+{
+  "format": "xstats-export",
+  "version": 1,
+  "kind": "posts",
+  "run": {
+    "id": "rf8m2x",
+    "type": "full",
+    "trigger": "schedule",
+    "source": "grok-bot-x-connector"
+  },
+  "fetched_at": "2026-10-24T02:30:39Z",
+  "account": {
+    "id": "1000000000000000001",
+    "username": "xgrowth_demo",
+    "name": "X Growth Demo",
+    "profile_image_url": "https://example.com/avatars/xgrowth_demo.png",
+    "public_metrics": {
+      "followers_count": 1204,
+      "following_count": 287,
+      "tweet_count": 3251,
+      "listed_count": 12
+    }
+  },
+  "window": {
+    "start_time": "2026-10-17T02:30:00Z",
+    "end_time": "2026-10-24T02:30:00Z"
+  },
+  "complete": true,
+  "rate_limited": false,
+  "errors": [
+    {
+      "detail": "Could not find tweet with referenced_tweets.id: [1849000000000000001].",
+      "parameter": "referenced_tweets.id",
+      "resource_id": "1849000000000000001",
+      "resource_type": "tweet",
+      "title": "Not Found Error",
+      "type": "https://api.x.com/2/problems/resource-not-found",
+      "value": "1849000000000000001"
+    }
+  ],
+  "data": [
+    {
+      "id": "2111657267819446284",
+      "text": "Most of my impressions come from replies. Tracking it properly changed what I post.",
+      "created_at": "2026-10-18T03:15:00.000Z",
+      "conversation_id": "2111657267819446284",
+      "lang": "en",
+      "public_metrics": {
+        "retweet_count": 3,
+        "reply_count": 7,
+        "like_count": 41,
+        "quote_count": 1,
+        "bookmark_count": 12,
+        "impression_count": 2210
+      },
+      "edit_history_tweet_ids": [
+        "2111657267819446284"
+      ]
+    },
+    {
+      "id": "2112117101949878286",
+      "text": "Try posting the same idea twice, a week apart. The second one often does better.",
+      "created_at": "2026-10-19T09:42:13.000Z",
+      "conversation_id": "2112114027525046285",
+      "in_reply_to_user_id": "1000000000000000002",
+      "referenced_tweets": [
+        {
+          "type": "replied_to",
+          "id": "2112114027525046285"
+        }
+      ],
+      "lang": "en",
+      "public_metrics": {
+        "retweet_count": 0,
+        "reply_count": 1,
+        "like_count": 6,
+        "quote_count": 0,
+        "bookmark_count": 0,
+        "impression_count": 431
+      },
+      "edit_history_tweet_ids": [
+        "2112117101949878286"
+      ]
+    },
+    {
+      "id": "2112908256736182288",
+      "text": "Yes, and bookmarks are the quiet signal worth watching.",
+      "created_at": "2026-10-21T14:05:59.000Z",
+      "conversation_id": "2112904234398646287",
+      "in_reply_to_user_id": "1000000000000000003",
+      "referenced_tweets": [
+        {
+          "type": "replied_to",
+          "id": "2112904234398646287"
+        }
+      ],
+      "lang": "en",
+      "public_metrics": {
+        "retweet_count": 0,
+        "reply_count": 0,
+        "like_count": 4,
+        "quote_count": 0,
+        "bookmark_count": 1,
+        "impression_count": 275
+      },
+      "edit_history_tweet_ids": [
+        "2112908256736182288"
+      ]
+    },
+    {
+      "id": "2113155892638646290",
+      "text": "Good reminder that consistency beats intensity.",
+      "created_at": "2026-10-22T06:30:00.000Z",
+      "conversation_id": "2113155892638646290",
+      "referenced_tweets": [
+        {
+          "type": "quoted",
+          "id": "2113133243397046289"
+        }
+      ],
+      "lang": "en",
+      "public_metrics": {
+        "retweet_count": 0,
+        "reply_count": 1,
+        "like_count": 11,
+        "quote_count": 0,
+        "bookmark_count": 3,
+        "impression_count": 780
+      },
+      "edit_history_tweet_ids": [
+        "2113155892638646290"
+      ]
+    },
+    {
+      "id": "2113541357564854291",
+      "text": "New: impressions gained per day, not lifetime totals stacked on the day you posted.",
+      "created_at": "2026-10-23T08:01:42.000Z",
+      "conversation_id": "2113541357564854291",
+      "lang": "en",
+      "public_metrics": {
+        "retweet_count": 2,
+        "reply_count": 4,
+        "like_count": 25,
+        "quote_count": 0,
+        "bookmark_count": 9,
+        "impression_count": 1630
+      },
+      "edit_history_tweet_ids": [
+        "2113541357564854291"
+      ]
+    },
+    {
+      "id": "2113713852511158293",
+      "text": "Thanks! The sync runs four times a day.",
+      "created_at": "2026-10-23T19:27:08.000Z",
+      "conversation_id": "2113709540766646292",
+      "in_reply_to_user_id": "1000000000000000004",
+      "referenced_tweets": [
+        {
+          "type": "replied_to",
+          "id": "2113709540766646292"
+        }
+      ],
+      "lang": "en",
+      "public_metrics": {
+        "retweet_count": 0,
+        "reply_count": 0,
+        "like_count": 1,
+        "quote_count": 0,
+        "bookmark_count": 0,
+        "impression_count": 96
+      },
+      "edit_history_tweet_ids": [
+        "2113713852511158293"
+      ]
+    },
+    {
+      "id": "2113812301214646294",
+      "text": "Morning check: 3 replies an hour beats 1 big post a day for me.",
+      "created_at": "2026-10-24T01:58:20.000Z",
+      "conversation_id": "2113812301214646294",
+      "lang": "en",
+      "public_metrics": {
+        "retweet_count": 0,
+        "reply_count": 1,
+        "like_count": 5,
+        "quote_count": 0,
+        "bookmark_count": 0,
+        "impression_count": 310
+      },
+      "edit_history_tweet_ids": [
+        "2113812301214646294"
+      ]
+    }
+  ]
+}

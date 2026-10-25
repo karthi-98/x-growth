@@ -1,0 +1,137 @@
+{
+  "format": "xstats-export",
+  "version": 1,
+  "kind": "posts",
+  "run": {
+    "id": "rl3c7d",
+    "type": "light",
+    "trigger": "schedule",
+    "source": "grok-bot-x-connector"
+  },
+  "fetched_at": "2026-10-24T07:30:21Z",
+  "account": {
+    "id": "1000000000000000001",
+    "username": "xgrowth_demo",
+    "name": "X Growth Demo",
+    "profile_image_url": "https://example.com/avatars/xgrowth_demo.png",
+    "public_metrics": {
+      "followers_count": 1207,
+      "following_count": 287,
+      "tweet_count": 3253,
+      "listed_count": 12
+    }
+  },
+  "window": {
+    "start_time": "2026-10-23T07:30:00Z",
+    "end_time": "2026-10-24T07:30:00Z"
+  },
+  "complete": true,
+  "rate_limited": false,
+  "errors": [],
+  "data": [
+    {
+      "id": "2113541357564854291",
+      "text": "New: impressions gained per day, not lifetime totals stacked on the day you posted.",
+      "created_at": "2026-10-23T08:01:42.000Z",
+      "conversation_id": "2113541357564854291",
+      "lang": "en",
+      "public_metrics": {
+        "retweet_count": 2,
+        "reply_count": 4,
+        "like_count": 37,
+        "quote_count": 0,
+        "bookmark_count": 9,
+        "impression_count": 2480
+      },
+      "edit_history_tweet_ids": [
+        "2113541357564854291"
+      ]
+    },
+    {
+      "id": "2113713852511158293",
+      "text": "Thanks! The sync runs four times a day.",
+      "created_at": "2026-10-23T19:27:08.000Z",
+      "conversation_id": "2113709540766646292",
+      "in_reply_to_user_id": "1000000000000000004",
+      "referenced_tweets": [
+        {
+          "type": "replied_to",
+          "id": "2113709540766646292"
+        }
+      ],
+      "lang": "en",
+      "public_metrics": {
+        "retweet_count": 0,
+        "reply_count": 0,
+        "like_count": 2,
+        "quote_count": 0,
+        "bookmark_count": 0,
+        "impression_count": 140
+      },
+      "edit_history_tweet_ids": [
+        "2113713852511158293"
+      ]
+    },
+    {
+      "id": "2113812301214646294",
+      "text": "Morning check: 3 replies an hour beats 1 big post a day for me.",
+      "created_at": "2026-10-24T01:58:20.000Z",
+      "conversation_id": "2113812301214646294",
+      "lang": "en",
+      "public_metrics": {
+        "retweet_count": 0,
+        "reply_count": 1,
+        "like_count": 19,
+        "quote_count": 0,
+        "bookmark_count": 0,
+        "impression_count": 1290
+      },
+      "edit_history_tweet_ids": [
+        "2113812301214646294"
+      ]
+    },
+    {
+      "id": "2113869134033846295",
+      "text": "Lunch thought: the best analytics tool is the one that is already open.",
+      "created_at": "2026-10-24T05:44:10.000Z",
+      "conversation_id": "2113869134033846295",
+      "lang": "en",
+      "public_metrics": {
+        "retweet_count": 0,
+        "reply_count": 1,
+        "like_count": 7,
+        "quote_count": 0,
+        "bookmark_count": 2,
+        "impression_count": 402
+      },
+      "edit_history_tweet_ids": [
+        "2113869134033846295"
+      ]
+    },
+    {
+      "id": "2113887853212598297",
+      "text": "Glad it helped \ud83d\ude80",
+      "created_at": "2026-10-24T06:58:33.000Z",
+      "conversation_id": "2113883184952246296",
+      "in_reply_to_user_id": "1000000000000000002",
+      "referenced_tweets": [
+        {
+          "type": "replied_to",
+          "id": "2113883184952246296"
+        }
+      ],
+      "lang": "en",
+      "public_metrics": {
+        "retweet_count": 0,
+        "reply_count": 0,
+        "like_count": 1,
+        "quote_count": 0,
+        "bookmark_count": 0,
+        "impression_count": 61
+      },
+      "edit_history_tweet_ids": [
+        "2113887853212598297"
+      ]
+    }
+  ]
+}

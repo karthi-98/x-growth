@@ -12,6 +12,7 @@
     "db:migrate": "bun scripts/migrate.ts",
     "db:seed": "bun scripts/seed.ts",
     "db:import": "bun scripts/import-posts.ts",
+    "simulate-bot": "bun scripts/simulate-bot.ts",
     "xstats": "bun cli/xstats.ts",
     "worker": "bun worker/index.ts"
   },

@@ -1,0 +1,118 @@
+{
+  "format": "xstats-export",
+  "version": 1,
+  "kind": "posts",
+  "run": {
+    "id": "rb4k9q-01",
+    "type": "backfill",
+    "trigger": "manual",
+    "source": "grok-bot-x-connector"
+  },
+  "fetched_at": "2026-10-17T02:41:18Z",
+  "account": {
+    "id": "1000000000000000001",
+    "username": "xgrowth_demo",
+    "name": "X Growth Demo",
+    "profile_image_url": "https://example.com/avatars/xgrowth_demo.png",
+    "public_metrics": {
+      "followers_count": 1180,
+      "following_count": 287,
+      "tweet_count": 3212,
+      "listed_count": 12
+    }
+  },
+  "window": {
+    "start_time": "2026-07-19T02:30:00Z",
+    "end_time": "2026-09-02T16:20:44Z"
+  },
+  "complete": true,
+  "rate_limited": false,
+  "errors": [],
+  "data": [
+    {
+      "id": "2079419130049462272",
+      "text": "Day 1 of building in public: a dashboard that shows which posts actually grow an account.",
+      "created_at": "2026-07-21T04:12:09.000Z",
+      "conversation_id": "2079419130049462272",
+      "lang": "en",
+      "public_metrics": {
+        "retweet_count": 2,
+        "reply_count": 6,
+        "like_count": 31,
+        "quote_count": 1,
+        "bookmark_count": 4,
+        "impression_count": 1840
+      },
+      "edit_history_tweet_ids": [
+        "2079419130049462272"
+      ]
+    },
+    {
+      "id": "2082417310823350274",
+      "text": "Agreed. The first 100 followers are the hardest part.",
+      "created_at": "2026-07-29T10:45:51.000Z",
+      "conversation_id": "2082410805457846273",
+      "in_reply_to_user_id": "1000000000000000002",
+      "referenced_tweets": [
+        {
+          "type": "replied_to",
+          "id": "2082410805457846273"
+        }
+      ],
+      "lang": "en",
+      "public_metrics": {
+        "retweet_count": 0,
+        "reply_count": 1,
+        "like_count": 3,
+        "quote_count": 0,
+        "bookmark_count": 0,
+        "impression_count": 212
+      },
+      "edit_history_tweet_ids": [
+        "2082417310823350274"
+      ]
+    },
+    {
+      "id": "2086075565994934276",
+      "text": "This is the best thread on posting cadence I have read this year.",
+      "created_at": "2026-08-08T13:02:27.000Z",
+      "conversation_id": "2086075565994934276",
+      "referenced_tweets": [
+        {
+          "type": "quoted",
+          "id": "2086014551454646275"
+        }
+      ],
+      "lang": "en",
+      "public_metrics": {
+        "retweet_count": 1,
+        "reply_count": 2,
+        "like_count": 14,
+        "quote_count": 0,
+        "bookmark_count": 6,
+        "impression_count": 960
+      },
+      "edit_history_tweet_ids": [
+        "2086075565994934276"
+      ]
+    },
+    {
+      "id": "2089917770757046277",
+      "text": "Small habit: write the hook last. It is easier once you know the point.",
+      "created_at": "2026-08-19T03:30:00.000Z",
+      "conversation_id": "2089917770757046277",
+      "lang": "en",
+      "public_metrics": {
+        "retweet_count": 9,
+        "reply_count": 12,
+        "like_count": 88,
+        "quote_count": 2,
+        "bookmark_count": 31,
+        "impression_count": 4120
+      },
+      "edit_history_tweet_ids": [
+        "2089917770757046277"
+      ]
+    }
+  ]
+}
