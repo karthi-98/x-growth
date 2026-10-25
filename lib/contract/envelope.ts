@@ -64,6 +64,11 @@ export type ExportEnvelope = {
     trigger: RunTrigger
     /** e.g. "grok-bot-x-connector" */
     source: string
+    /**
+     * Version of the bot pack (instructions + skill stubs) the bot runs, from
+     * the "Bot pack version" line in its instructions. Missing on pack 1.
+     */
+    bot_pack?: number
   }
   fetched_at: string
   account: ApiUser
@@ -105,4 +110,13 @@ export type ImportResult = {
   next: NextFetch
   /** Files moved to failed/, with reasons. */
   failed: { file: string; reason: string }[]
+  /**
+   * The installed app, for the bot: `version` picks which release its skills
+   * are downloaded from; `bot_pack` says whether the user must update the
+   * pasted part of the bot (instructions and skill stubs).
+   */
+  app: {
+    version: string
+    bot_pack: { seen: number | null; required: number; latest: number; outdated: boolean }
+  }
 }

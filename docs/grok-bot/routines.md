@@ -1,9 +1,9 @@
 # X Growth routines
 
 A Grok Bot **routine** tells the bot when to run a workflow: on a schedule, or when its webhook is
-called ([routines help](https://cursor.com/help/grok-bot/routines)). X Growth uses four scheduled
+called ([routines help](https://cursor.com/help/grok-bot/routines)). X Growth uses four daily sync
 routines and one optional webhook routine, all running the [`xgrowth-sync`](skills/xgrowth-sync.md)
-skill. The [`install-xgrowth`](skills/install-xgrowth.md) skill creates them, because routines may
+skill, plus a weekly update check running [`xgrowth-update`](skills/xgrowth-update.md). The [`install-xgrowth`](skills/install-xgrowth.md) skill creates them, because routines may
 not survive being shared as a template (spike S3).
 
 ## What Grok Bot gives us (Oct 2026)
@@ -70,6 +70,34 @@ The user asks the bot ("move the 22:00 X Growth sync to 23:30"). The bot edits t
 (Grok Bot's **Edit** starts "Edit your routine: X Growth sync 22:00"), renames it, checks the
 5-minute spacing, and reminds the user to update the reminder times in X Growth's settings so the
 app's "next sync" label stays right. Adding or removing a reminder works the same way.
+
+## The weekly update check
+
+One more routine keeps the app current: **"X Growth update check"**, every **Sunday at 10:00**
+in the user's timezone by default. It runs [`xgrowth-update`](skills/xgrowth-update.md):
+
+1. In the bot's own cloud, it reads the latest release from GitHub and compares it with the
+   installed version (`appVersion` in its state). No approval and no reads from X.
+2. Only if there's a newer version, it asks **one** approval to run `xstats update`, which
+   backs up the database, swaps the app and rolls back by itself on failure.
+3. If the approval expires or the computer is off, nothing changes; it reports that the update
+   is waiting, and next week's check asks again. The user can also say "update X Growth" any time.
+
+The prompt the install skill sends:
+
+```text
+Create a routine named "X Growth update check".
+When to run: every Sunday at 10:00, <IANA zone> time.
+Instruction:
+Run the xgrowth-update skill with trigger "schedule". Check for a newer X Growth release in your
+own cloud first. Only if there is one, ask once to run the update on the computer. If the
+approval expires or the computer is off, don't retry: report that the update is waiting.
+Never post to X, never touch keys. Report the result in this chat in one line.
+```
+
+Because skills load from the release that matches the installed app, an update also moves the
+bot to the matching skills. That's how improvements reach every user without anyone pasting
+anything.
 
 ## Optional: the "Sync now" webhook routine
 

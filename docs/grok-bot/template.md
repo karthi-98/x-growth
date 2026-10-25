@@ -15,14 +15,14 @@ Source: [templates for Grok Bot](https://x.ai/bot/guides/templates-for-grok-bot)
 | Routines (may not survive: spike S3) | Non-standard plugins such as MCP servers |
 | Specific plugins (the recipient reinstalls them) | Secrets |
 
-That is why the X Growth Bot is only words: the instructions and six skills from this folder.
-All code is in the app, which the bot installs from GitHub Releases.
+That is why the X Growth Bot is only words: the instructions and six short skill **stubs** from
+this folder. The full skills and all code ship with each app release on GitHub, and the bot
+downloads them as it runs (**Loading skills** in [instructions.md](instructions.md)).
 
 Two consequences:
 
-- **Skills may not come along** if Grok Bot treats them as private skills. The instructions tell
-  the bot to re-save any missing skill from
-  `https://raw.githubusercontent.com/karthi-98/x-growth/main/docs/grok-bot/skills/<name>.md`.
+- **Skills may not come along** if Grok Bot treats them as private skills. That's harmless: the
+  instructions load every skill from the release whether or not its stub is saved.
 - **Routines are created by `install-xgrowth`** for each user, with their own times and timezone.
   The template bot has **no routines**, so nothing runs for a new user before install.
 
@@ -35,12 +35,10 @@ copied.
 1. In Grok Bot, create a new bot named **X Growth Bot**. Short description: "Installs X Growth on
    your computer and keeps your X analytics fresh."
 2. Paste [instructions.md](instructions.md) (the part between the lines) into its instructions.
-3. Save each skill: in the bot's chat, say "Save the text below as a skill named `<name>`" and
-   paste the part of the file below its line. Do this for
-   [`install-xgrowth`](skills/install-xgrowth.md), [`xgrowth-backfill`](skills/xgrowth-backfill.md),
-   [`xgrowth-sync`](skills/xgrowth-sync.md), [`xgrowth-update`](skills/xgrowth-update.md) and
-   [`xgrowth-doctor`](skills/xgrowth-doctor.md). Leave out `xgrowth-inspiration` until Phase 5.
-4. Check that all five show in the `/` menu. If one is missing, open **Connect apps**, select the
+3. Save the skill stubs: in the bot's chat, say "Save each skill below as a skill with its name"
+   and paste everything below the line in [stubs.md](stubs.md). Don't paste the full files in
+   [skills/](skills/): those are downloaded from the release at run time.
+4. Check that the stubs show in the `/` menu. If one is missing, open **Connect apps**, select the
    connected count next to the title, and enable it for this bot under **Private skills**.
 5. Add the **X** app from **Connect apps** if you want the template to list it, so recipients are
    prompted to connect X. (The bot can also read public X data with built-in access; spike S2
@@ -61,7 +59,7 @@ scheduled run. Record the results in [spikes.md](spikes.md).
    packages a copy; nothing is public yet.
 2. Choose who can use it: **a public link**, not **Team**.
 3. Review the template details: the context and integrations listed should be the instructions,
-   the five skills, and the X app if you added it. **No memories, no routines, no secrets.**
+   the skill stubs, and the X app if you added it. **No memories, no routines, no secrets.**
 4. Click **Publish**, then **Copy Link**.
 
 ## 4. Point people to it
@@ -72,21 +70,27 @@ Put the link in:
 
 ## 5. Updating the template
 
-When skills or instructions change (usually with an app release):
+**A change to a full skill** (anything in [skills/](skills/)): change the file and ship an app
+release. Every bot loads skills from the release that matches the installed app, and the weekly
+update check moves users to the new release. Nobody pastes anything, and the template doesn't
+change.
 
-1. Update the files here in the same PR as the app change, and tag the release (`v<version>`).
-   Installed bots pick up new skills through `xgrowth-update`, which re-saves them from that tag.
-2. Update the template bot the same way as in step 1, then **Share as Template** and **Publish**
-   again. Check whether the link stays the same (spike S3); if it changes, update every place
-   from step 4.
-3. Existing users aren't affected by a new template; their bots keep their own copy and refresh
-   skills on update.
+**A change to the pasted part** ([instructions.md](instructions.md) or [stubs.md](stubs.md)):
+
+1. Change the files and bump `BOT_PACK_VERSION` in `lib/bot-pack.ts` and the **Bot pack version**
+   line in instructions.md. Raise `MIN_BOT_PACK_VERSION` too if older bots must stop.
+2. Ship an app release. Once a bot imports with an older pack, the app's import result tells it
+   so; the bot offers to **update itself** from the release, and the app shows "Update your bot".
+3. Update the template bot from the new files, then **Share as Template** and **Publish** again.
+   Check whether the link stays the same (spike S3); if it changes, update every place from
+   step 4.
 
 ## Checklist before every publish
 
 - [ ] Template bot is clean: no memories about any user, no routines, no files with user data.
 - [ ] Instructions match [instructions.md](instructions.md).
-- [ ] Five skills, text matching [skills/](skills/) at the release tag.
+- [ ] Skill stubs matching [stubs.md](stubs.md), and the **Bot pack version** line matching
+      `BOT_PACK_VERSION` in `lib/bot-pack.ts`.
 - [ ] No keys, tokens, webhook URLs, internal URLs or personal data anywhere in the bot.
 - [ ] Added from a second account and tested end to end (S3).
 - [ ] Link copied into the README, user guide and the app.

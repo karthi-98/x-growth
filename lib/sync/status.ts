@@ -1,5 +1,6 @@
 import { and, desc, inArray, ne } from "drizzle-orm"
 
+import { botPackStatus, type BotPackStatus } from "../bot-pack"
 import type { NextFetch } from "../contract/envelope"
 import { db } from "../db/client"
 import { syncRuns, type SyncRun } from "../db/schema"
@@ -31,6 +32,8 @@ export type SyncStatusInfo = {
   coverage: Coverage
   state: SyncStateRow
   timeZone: string
+  /** Whether the pasted part of the user's bot (instructions, skill stubs) needs updating. */
+  botPack: BotPackStatus
 }
 
 /** Longest stretch between two reminders, in hours (24 when there are none). */
@@ -99,5 +102,6 @@ export async function getSyncStatus(now = new Date(), settings?: AppSettings): P
     coverage,
     state,
     timeZone: s.timeZone,
+    botPack: botPackStatus(s.botPack),
   }
 }

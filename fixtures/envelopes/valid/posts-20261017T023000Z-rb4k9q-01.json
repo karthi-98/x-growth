@@ -6,7 +6,8 @@
     "id": "rb4k9q-01",
     "type": "backfill",
     "trigger": "manual",
-    "source": "grok-bot-x-connector"
+    "source": "grok-bot-x-connector",
+    "bot_pack": 2
   },
   "fetched_at": "2026-10-17T02:41:18Z",
   "account": {

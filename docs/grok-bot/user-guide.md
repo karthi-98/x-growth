@@ -102,7 +102,16 @@ Now **Sync now** in X Growth starts a sync right away. You still approve the imp
 | "Refresh all X Growth data" | Rereads the last 90 days (updates older posts' numbers) |
 | "Update X Growth" | Installs the latest version, after backing up your data |
 | "What's wrong with X Growth?" | Runs a check-up and explains any problem |
+| "Update yourself from GitHub" | Updates the bot's own instructions (when X Growth says **Update your bot**) |
 | "Move the 22:00 sync to 23:30" | Changes a reminder time |
+
+## Updates
+
+- **X Growth** checks for a new version every Sunday at 10:00. If there is one, the bot asks you to
+  approve the update once. Your data is backed up first, and a failed update rolls back by itself.
+- **The bot's skills** update with X Growth; you don't do anything.
+- **The bot's own instructions** rarely change. When they do, X Growth shows **Update your bot**
+  and the bot tells you; say "update yourself from GitHub" and confirm.
 
 ## Troubleshooting
 

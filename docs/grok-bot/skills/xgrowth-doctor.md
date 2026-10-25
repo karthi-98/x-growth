@@ -1,7 +1,7 @@
 # Skill: `xgrowth-doctor`
 
-> **To install:** tell the bot "Save the text below the line as a skill named `xgrowth-doctor`",
-> then paste it.
+> **Source of truth.** Users don't paste this file: their bot saves a short stub
+> ([stubs.md](../stubs.md)) and downloads these steps from the release on every run.
 
 ---
 

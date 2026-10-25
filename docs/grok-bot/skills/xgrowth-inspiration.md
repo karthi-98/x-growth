@@ -1,11 +1,7 @@
 # Skill: `xgrowth-inspiration` (draft, Phase 5)
 
-> **Draft.** Phase 5 (ARCHITECTURE section 12) builds the app side: niche settings,
-> `inspiration_posts` and the `/inspiration` page. Don't add this skill to the published bot
-> until that ships, and update it to match. Open questions are at the end.
->
-> **To install (later):** tell the bot "Save the text below the line as a skill named
-> `xgrowth-inspiration`", then paste it.
+> **Source of truth.** Users don't paste this file: their bot saves a short stub
+> ([stubs.md](../stubs.md)) and downloads these steps from the release on every run.
 
 ---
 

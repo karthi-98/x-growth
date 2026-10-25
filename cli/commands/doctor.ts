@@ -155,6 +155,23 @@ export const command: Command = {
             failing: "Ask Grok Bot to run the sync again. If it keeps failing, check the file in data/failed/ and its .error.txt.",
           }
           add({ id: "sync", level: syncLevel, title: "Sync", detail: syncDetail[status.health], fix: syncFix[status.health] })
+          const pack = status.botPack
+          add(
+            pack.outdated
+              ? {
+                  id: "bot-pack",
+                  level: "warn",
+                  title: "X Growth Bot",
+                  detail: `The bot imports with pack ${pack.seen ?? 1}; this app needs pack ${pack.required} or newer.`,
+                  fix: 'Ask the bot to "update yourself from GitHub", or paste the latest instructions and skill stubs from docs/grok-bot.',
+                }
+              : {
+                  id: "bot-pack",
+                  level: "ok",
+                  title: "X Growth Bot",
+                  detail: pack.seenAt ? `Pack ${pack.seen} (current is ${pack.latest}).` : "No import from the bot yet.",
+                }
+          )
         }
       } catch (err) {
         add({

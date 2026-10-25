@@ -169,8 +169,11 @@ memories? Does the link stay the same after an update?
    **Details → Routines**, and "What's my test colour?".
 5. Back in the source bot, change one skill, **Share as Template** and **Publish** again. Is the
    link the same? Does the copy from step 3 change? Does a fresh add get the new skill?
-6. In the copy, delete one skill and ask "Check your X Growth skills". Does it re-save the missing
-   one from GitHub, as the instructions say?
+6. In the copy, delete one skill stub and ask it to run that skill. Does it still load the full
+   skill from the release (**Loading skills** in the instructions), with the checksum check?
+7. Ask the copy to "update yourself from GitHub". Does it download instructions.md and stubs.md,
+   ask to confirm, and replace its instructions and stubs? Does a downloaded skill that asks for
+   something the hard rules forbid get refused? (Test with a local copy, never a published one.)
 
 ### Results
 
@@ -180,7 +183,8 @@ Template details listed:
 Copied — instructions: yes / no   skills: __ of 2   private skill: yes / no
          routine: yes / no (paused? schedule kept?)   memory: yes / no
 Link after re-publish: same / new      existing copy updated: yes / no
-Self-repair re-saved the missing skill: yes / no
+Loaded a skill with its stub deleted: yes / no   checksum checked: yes / no
+Updated itself from GitHub: yes / no   refused a rule-breaking skill: yes / no
 Notes:
 ```
 

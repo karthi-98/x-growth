@@ -1,7 +1,7 @@
 # Skill: `xgrowth-backfill`
 
-> **To install:** tell the bot "Save the text below the line as a skill named `xgrowth-backfill`",
-> then paste it.
+> **Source of truth.** Users don't paste this file: their bot saves a short stub
+> ([stubs.md](../stubs.md)) and downloads these steps from the release on every run.
 
 ---
 
@@ -101,8 +101,8 @@ stop the same way, with `rate_limited: false` and the error in `errors`.
 
 ## Files
 
-Same envelope as `xgrowth-sync` (format `xstats-export`, version 1), raw X objects, `account`
-in every file, minified one-line JSON with non-ASCII escaped as `\uXXXX`.
+Same envelope as `xgrowth-sync` (format `xstats-export`, version 1, with `run.bot_pack` set to
+your **Bot pack version**), raw X objects, `account` in every file, minified one-line JSON with non-ASCII escaped as `\uXXXX`.
 
 **Chunking**, at most **1,000 posts per file**:
 
@@ -142,7 +142,8 @@ exactly as in `xgrowth-sync` step 6 (PowerShell on Windows, `sh` on macOS or Lin
 
 Read the `ImportResult` as in `xgrowth-sync` step 7:
 
-- Save `next` and `next_saved_at` in memory and in `/workspace/x-growth/state.json`.
+- Save `next` and `next_saved_at`, and `app.version` as `appVersion`, in memory and in
+  `/workspace/x-growth/state.json`. Handle `app.bot_pack.outdated` as `xgrowth-sync` does.
 - `ok`: the backfill is done.
 - `partial`: tell the user how far it got. The routines continue the rest on their own (the
   app's `next` points at the missing part), or the user can say "continue the backfill" once the

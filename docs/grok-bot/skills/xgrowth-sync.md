@@ -1,8 +1,7 @@
 # Skill: `xgrowth-sync`
 
-> **To install:** tell the bot "Save the text below the line as a skill named `xgrowth-sync`",
-> then paste it. Every routine runs this skill, so test it with the routine's **Test** button after
-> any change.
+> **Source of truth.** Users don't paste this file: their bot saves a short stub
+> ([stubs.md](../stubs.md)) and downloads these steps from the release on every run.
 
 ---
 
@@ -110,14 +109,15 @@ Follow `next_token` the same way. Keep the posts from `data` and the users from 
 ## Step 4: build the files
 
 Each file is one **export envelope, version 1**. Copy X's objects into `data` (and `users`)
-exactly as returned: no renaming, no dropped or computed fields.
+exactly as returned: no renaming, no dropped or computed fields. Set `run.bot_pack` to the
+**Bot pack version** in your instructions (leave it out if your instructions have none).
 
 ```json
 {
   "format": "xstats-export",
   "version": 1,
   "kind": "posts",
-  "run": { "id": "rl3c7d", "type": "light", "trigger": "schedule", "source": "grok-bot-x-connector" },
+  "run": { "id": "rl3c7d", "type": "light", "trigger": "schedule", "source": "grok-bot-x-connector", "bot_pack": 2 },
   "fetched_at": "2026-10-24T07:30:41Z",
   "account": { "id": "…", "username": "…", "name": "…", "profile_image_url": "…", "public_metrics": { "…": 0 } },
   "window": { "start_time": "2026-10-23T07:30:00Z", "end_time": "2026-10-24T07:30:00Z" },
@@ -223,13 +223,19 @@ The command prints one JSON object, the app's `ImportResult`:
   "mentions": { "received": 3, "new": 3 },
   "gap": null,
   "next": { "type": "light", "from": "2026-10-24T06:30:00Z", "mentionsSinceId": "1849…" },
-  "failed": []
+  "failed": [],
+  "app": { "version": "0.2.0", "bot_pack": { "seen": 2, "required": 2, "latest": 2, "outdated": false } }
 }
 ```
 
 1. **Save `next`** in memory and in `/workspace/x-growth/state.json`, with `next_saved_at = now`,
-   whatever the `status`.
-2. **`status`:**
+   whatever the `status`. Also save `app.version` as `appVersion`: it picks which release your
+   skills load from.
+2. **`app.bot_pack.outdated: true`** means your pasted instructions or skill stubs are older than
+   this app needs. Finish the run, then add to your report: "My X Growth instructions are out of
+   date. Say 'update yourself from GitHub' and I'll update them." (See **Updating yourself** in
+   your instructions.) Say it at most once a day.
+3. **`status`:**
    - `ok`: done.
    - `partial`: saved, but some of the window wasn't covered (read limit). The next run continues.
    - `empty`: the app had already picked up the files (its worker watches the inbox) or found
@@ -237,7 +243,7 @@ The command prints one JSON object, the app's `ImportResult`:
    - `failed`: read `failed[].reason`. If a file was rejected for the wrong account, stop and tell
      the user the app is set up for a different X account. For any other reason, report it and
      suggest `xgrowth-doctor`. Don't resend the files.
-3. **`gap`** is `{ "from", "to" }` when an earlier window was never covered. Run **one** catch-up:
+4. **`gap`** is `{ "from", "to" }` when an earlier window was never covered. Run **one** catch-up:
    - If `gap.from` is more than 90 days ago, don't fetch: tell the user a full backfill is needed
      and that it runs when they say "refresh all X Growth data".
    - Otherwise fetch posts for `[gap.from, gap.to)` as in step 2b (slices, oldest first), with a
