@@ -90,7 +90,7 @@ flowchart LR
    - download the latest release for this OS and verify its checksum
    - unzip it to the install folder (section 9)
    - `xstats setup --handle … --timezone …`: creates the data folders, runs migrations, saves settings
-   - `xstats autostart enable`: starts the app at login (Task Scheduler on Windows, a LaunchAgent on macOS)
+   - `xstats autostart enable`: starts the app at login (a Startup-folder shortcut on Windows, a LaunchAgent on macOS, a systemd user unit on Linux)
    - start the app and open `http://127.0.0.1:3000/setup`
 4. In the browser, the user pastes their **X API keys** and **AI key** into the setup wizard. The bot never sees them.
 5. **Backfill:** the bot fetches the last 90 days of the user's posts and profile, drops the files into the inbox and runs `xstats import --inbox --json`. Large backfills are split into files of at most 1,000 posts.
@@ -350,11 +350,11 @@ Secrets are never sent to the browser. The UI only shows the last 4 characters.
 | Topic | Plan |
 |---|---|
 | **Release** | GitHub Releases with a prebuilt Next.js `output: "standalone"` bundle **per OS/arch** (win-x64, mac-arm64, mac-x64, linux-x64), because libSQL ships a native binary. Each has a SHA-256 checksum. |
-| **Runtime** | Bun, installed by the bot. Whether the standalone server runs under Bun on Windows is **Spike S6**; Node LTS is the fallback. |
-| **Install folder** | Windows `%LOCALAPPDATA%\XStats\app`, macOS `~/Library/Application Support/XStats/app` |
-| **Data folder** | Separate from the app (`…\XStats\data`) so updates never touch data. Set through `DATABASE_PATH` and `XSTATS_DATA_DIR`. |
+| **Runtime** | Bun, installed by the bot. Spike S6 passed: the standalone server runs under Bun on Windows with libSQL's native binary. Node is the fallback (`--runtime node`, or automatic after two failed starts under Bun). |
+| **Install folder** | Windows `%LOCALAPPDATA%\XGrowth\app`, macOS `~/Library/Application Support/XGrowth/app`, Linux `~/.local/share/XGrowth/app` |
+| **Data folder** | Separate from the app (`…\XGrowth\data`) so updates never touch data. Set through `DATABASE_PATH` and `XSTATS_DATA_DIR`. |
 | **Launcher** | `xstats start` runs the web server and the worker together, with a single-instance lock. `xstats autostart enable` registers it to start at login without admin rights. |
-| **Updates** | `xstats update` downloads and verifies the new release, **backs up the DB**, swaps the app folder, runs migrations and restarts. Rolls back if migrations fail. |
+| **Updates** | `xstats update` downloads and verifies the new release, **backs up the DB**, swaps the app folder, runs migrations and restarts. Rolls back if migrations or the restart fail. Details: [install/README.md](../install/README.md). |
 | **Backups** | The worker copies the DB to `data/backups/` daily and keeps the last 7. |
 | **Uninstall** | `xstats uninstall` removes autostart. Data is kept unless `--purge`. |
 
@@ -441,7 +441,7 @@ Each phase ends with something the user can run.
 | S3 | Does a shared template keep routines, skills and instructions? | Share a template, add it from a second account | Phase 2 |
 | S4 | Can routine approvals be answered from the iOS app? Is the expiry really ~10 min? | Trigger a routine while away from the desk | D5 UX |
 | S5 | Webhook routine: what body format does the bot get, and how fast does it start? | `curl` the webhook with a JSON body | Section 4.3 |
-| S6 | Windows without admin rights: Bun install, the standalone server with libSQL's native binary under Bun, and Task Scheduler autostart | Clean Windows VM | Section 9 |
+| S6 | Windows without admin rights: Bun install, the standalone server with libSQL's native binary under Bun, and autostart. **Result (Oct 2026):** the server runs under Bun; autostart uses the Startup folder, because `schtasks /SC ONLOGON` needs admin. Findings: [install/README.md](../install/README.md) | Clean Windows VM | Section 9 |
 | S7 | X media upload: does the v2 endpoint work with OAuth 1.0a user keys? | Upload one image | Media (later) |
 | S8 | How long can a user be away before Grok Bot pauses routines? | Watch over 1–2 weeks | Stale-sync banner copy |
 
