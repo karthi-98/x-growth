@@ -39,7 +39,11 @@ In the X Growth Bot's chat, type:
 The bot asks for:
 - your **X handle**,
 - your **timezone**,
-- how many **reminders** a day you want (4 by default, at 8:00, 13:00, 18:00 and 22:00).
+- how many **reminders** a day you want (4 by default, at 8:00, 13:00, 18:00 and 22:00),
+- **where to install** it. The default is `%LOCALAPPDATA%\XGrowth` on Windows and
+  `~/Library/Application Support/XGrowth` on a Mac. Any folder you can write to works, such as
+  `D:\Apps\XGrowth`; a protected folder like `C:\Program Files` doesn't. The app and your data
+  both live inside that folder.
 
 Then it asks you to approve a few steps on your computer: checking it, installing the app,
 setting it up. Each one shows what it will run. Click **Allow once** for each.

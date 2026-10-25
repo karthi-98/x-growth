@@ -110,7 +110,7 @@ files), so routine runs can read it even if memory isn't shared with them (spike
   "timezone": "Asia/Kolkata",
   "os": "windows",
   "cli": "xstats",
-  "inbox": "C:\\Users\\me\\AppData\\Local\\XStats\\data\\inbox",
+  "inbox": "C:\\Users\\me\\AppData\\Local\\XGrowth\\data\\inbox",
   "next": { "type": "light", "from": "2026-10-24T06:30:00Z", "mentionsSinceId": "1849900000000000000" },
   "next_saved_at": "2026-10-24T07:31:05Z",
   "last_run": { "id": "rl3c7d", "at": "2026-10-24T07:31:05Z", "status": "ok" }
