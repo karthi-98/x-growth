@@ -289,12 +289,12 @@ export function PostsControls() {
 }
 
 /** Subtitle under the page title; follows the URL range. */
-export function PostsSubtitle() {
+export function PostsSubtitle({ zoneLabel }: { zoneLabel: string }) {
   const searchParams = useSearchParams()
   const { range, custom } = readParams(searchParams)
   return (
     <p className="text-sm text-muted-foreground">
-      {custom ? "Custom range" : POSTS_RANGE_LABELS[range].long} &middot; reposts excluded &middot; times in IST
+      {custom ? "Custom range" : POSTS_RANGE_LABELS[range].long} &middot; reposts excluded &middot; times in {zoneLabel}
     </p>
   )
 }

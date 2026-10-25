@@ -26,7 +26,16 @@ function Metric({ icon: Icon, label, value }: { icon: LucideIcon; label: string;
  * One post. The whole row is the link to X (new tab), so it gets the hover
  * lift, background and focus ring; the stagger index feeds .t-rise.
  */
-export function PostRow({ post, index }: { post: DashboardPost; index: number }) {
+export function PostRow({
+  post,
+  index,
+  timeZone,
+}: {
+  post: DashboardPost
+  index: number
+  /** Settings timezone for the post time. */
+  timeZone: string
+}) {
   return (
     <li className="t-rise" style={{ "--i": Math.min(index, 12) } as React.CSSProperties}>
       <a
@@ -38,7 +47,7 @@ export function PostRow({ post, index }: { post: DashboardPost; index: number })
         <span className="flex items-center gap-2 text-xs text-muted-foreground">
           <PostTypeBadge type={post.type} />
           <time dateTime={post.createdAt} className="tabular-nums">
-            {formatPostDate(post.createdAt)}
+            {formatPostDate(post.createdAt, timeZone)}
           </time>
           <ArrowUpRightIcon
             aria-hidden="true"

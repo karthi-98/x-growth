@@ -5,7 +5,8 @@ import { DEFAULT_RANGE_DAYS, isDateKey, type DateRangeKeys } from "@/lib/range"
 /*
  * Carry a date range between the dashboard (?from&to, default last 30 days)
  * and /posts (?range=30d|3m|all, or ?from&to which wins over range). Pure and
- * client-safe; callers pass "today" (IST) and the earliest data date.
+ * client-safe; callers pass "today" (in the settings timezone) and the
+ * earliest data date.
  */
 
 type Params = { get(name: string): string | null }

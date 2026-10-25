@@ -13,10 +13,28 @@ import {
 } from "@/components/range-filter/filter-transition"
 import { Separator } from "@/components/ui/separator"
 import { APP_NAME } from "@/lib/app"
+import { formatTimeZone, timeZoneAbbr } from "@/lib/format"
+import { getSettings } from "@/lib/get-settings"
 
 export const metadata: Metadata = {
   title: `Posts \u00b7 ${APP_NAME}`,
   description: "Browse posts and replies with search, filters and metrics",
+}
+
+/** The subtitle names the settings timezone, read per request. */
+async function Subtitle() {
+  const { timeZone } = await getSettings()
+  return <PostsSubtitle zoneLabel={timeZoneAbbr(timeZone)} />
+}
+
+async function Footnote() {
+  const { timeZone } = await getSettings()
+  return (
+    <>
+      Lifetime public metrics per post from the X API. Times in {formatTimeZone(timeZone)}. Click a
+      post to open it on X.
+    </>
+  )
 }
 
 export default function PostsPage({
@@ -31,7 +49,7 @@ export default function PostsPage({
         <header className="flex min-w-0 flex-col gap-1.5">
           <h1 className="text-2xl font-semibold tracking-tight">Posts</h1>
           <Suspense fallback={<p className="h-5" />}>
-            <PostsSubtitle />
+            <Subtitle />
           </Suspense>
         </header>
 
@@ -47,7 +65,9 @@ export default function PostsPage({
 
         <Separator />
         <footer className="text-xs text-muted-foreground">
-          Lifetime public metrics per post from the X API. Click a post to open it on X.
+          <Suspense fallback={null}>
+            <Footnote />
+          </Suspense>
         </footer>
       </div>
     </FilterTransitionProvider>

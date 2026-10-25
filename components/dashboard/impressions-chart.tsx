@@ -22,10 +22,6 @@ import {
 import { useReducedMotion } from "@/hooks/use-reduced-motion"
 import { formatCompact, formatDayKey } from "@/lib/format"
 
-const chartConfig = {
-  impressions: { label: "Impressions", color: "var(--chart-1)" },
-} satisfies ChartConfig
-
 /** URL search param holding this chart's curve / bar choice. */
 const CHART_PARAM = "impChart"
 /** This card's name in the shared day hover (see chart-hover-sync). */
@@ -71,14 +67,22 @@ export function ImpressionsChartTypeSelect() {
 
 export function ImpressionsChart({
   data,
+  seriesLabel = "Impressions",
 }: {
-  data: { date: string; impressions: number }[]
+  /** Null marks a day without data (drawn as a gap), e.g. before snapshots began. */
+  data: { date: string; impressions: number | null }[]
+  /** Tooltip name for the series. */
+  seriesLabel?: string
 }) {
   const reduceMotion = useReducedMotion()
   const [type] = useChartType(CHART_PARAM)
   const fillId = `fill-impressions-${useId().replace(/:/g, "")}`
+  const chartConfig = useMemo(
+    () => ({ impressions: { label: seriesLabel, color: "var(--chart-1)" } }) satisfies ChartConfig,
+    [seriesLabel]
+  )
   const ticks = useMemo(
-    () => niceTicks(Math.max(0, ...data.map((d) => d.impressions))),
+    () => niceTicks(Math.max(0, ...data.map((d) => d.impressions ?? 0))),
     [data]
   )
   const dates = useMemo(() => data.map((d) => d.date), [data])

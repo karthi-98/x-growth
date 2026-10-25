@@ -13,6 +13,7 @@ import {
   type PostsParams,
   type PostsView,
 } from "@/lib/posts-params"
+import { getSettings } from "@/lib/get-settings"
 import { getPostsPage } from "@/lib/posts-query"
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>
@@ -58,8 +59,9 @@ function PageLink({
 }
 
 export async function PostsList({ searchParams }: { searchParams: SearchParams }) {
-  const params = parsePostsParams(await searchParams)
-  const { rows, total, page, pageCount, range } = await getPostsPage(params)
+  const [raw, { timeZone }] = await Promise.all([searchParams, getSettings()])
+  const params = parsePostsParams(raw)
+  const { rows, total, page, pageCount, range } = await getPostsPage(params, timeZone)
   const label = range.from ? formatRangeLabel(range.from, range.to) : null
   const within = params.custom
     ? " in this date range"
@@ -97,7 +99,7 @@ export async function PostsList({ searchParams }: { searchParams: SearchParams }
           ) : (
             <ol className="flex flex-col divide-y divide-border/60">
               {rows.map((post, i) => (
-                <PostRow key={post.id} post={post} index={i} />
+                <PostRow key={post.id} post={post} index={i} timeZone={timeZone} />
               ))}
             </ol>
           )}

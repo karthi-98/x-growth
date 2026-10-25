@@ -13,7 +13,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { istDateKey } from "@/lib/dates"
+import { dateKeyIn } from "@/lib/dates"
 import { activeNavItem, NAV_GROUPS, NAV_ITEMS, type NavItem } from "@/lib/nav"
 import { navHref } from "@/lib/range-links"
 
@@ -51,10 +51,10 @@ function NavList({ hrefFor }: { hrefFor: HrefFor }) {
 }
 
 /** Reads the URL so links carry the current date range between pages. */
-function NavListWithParams({ minKey }: { minKey: string | null }) {
+function NavListWithParams({ minKey, timeZone }: { minKey: string | null; timeZone: string }) {
   const pathname = usePathname()
   const params = useSearchParams()
-  const today = useMemo(() => istDateKey(), [])
+  const today = useMemo(() => dateKeyIn(new Date(), timeZone), [timeZone])
   return (
     <NavList
       hrefFor={(item) =>
@@ -66,10 +66,10 @@ function NavListWithParams({ minKey }: { minKey: string | null }) {
   )
 }
 
-export function NavMain({ minKey }: { minKey: string | null }) {
+export function NavMain({ minKey, timeZone }: { minKey: string | null; timeZone: string }) {
   return (
     <Suspense fallback={<NavList hrefFor={(item) => item.href} />}>
-      <NavListWithParams minKey={minKey} />
+      <NavListWithParams minKey={minKey} timeZone={timeZone} />
     </Suspense>
   )
 }

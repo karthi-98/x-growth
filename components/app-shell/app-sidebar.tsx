@@ -15,7 +15,16 @@ import {
 } from "@/components/ui/sidebar"
 import { APP_NAME } from "@/lib/app"
 
-export function AppSidebar({ minKey, account }: { minKey: string | null; account: string }) {
+export function AppSidebar({
+  minKey,
+  account,
+  timeZone,
+}: {
+  minKey: string | null
+  account: string
+  /** Settings timezone, for "today" in range links. */
+  timeZone: string
+}) {
   return (
     <Sidebar collapsible="icon" className="t-app-sidebar">
       <SidebarHeader>
@@ -36,7 +45,7 @@ export function AppSidebar({ minKey, account }: { minKey: string | null; account
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain minKey={minKey} />
+        <NavMain minKey={minKey} timeZone={timeZone} />
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>

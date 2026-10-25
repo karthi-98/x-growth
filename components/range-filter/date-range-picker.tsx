@@ -15,8 +15,9 @@ import { useMediaQuery } from "@/hooks/use-media-query"
 import { formatRangeLabel } from "@/lib/format"
 import { DEFAULT_RANGE_DAYS, lastDays, type DateRangeKeys } from "@/lib/range"
 
-// Calendar days are plain local Date objects built from IST date keys, so the
-// picker never shifts a day whatever the browser's time zone.
+// Calendar days are plain local Date objects built from date keys (in the
+// settings timezone), so the picker never shifts a day whatever the
+// browser's time zone.
 const pad = (n: number) => String(n).padStart(2, "0")
 const keyToDate = (key: string) => {
   const [y, m, d] = key.split("-").map(Number)
@@ -37,9 +38,9 @@ export function DateRangePicker({
 }: {
   from: string
   to: string
-  /** First IST date with stored data. */
+  /** First date with stored data (settings timezone). */
   minKey: string
-  /** Last selectable IST date (today). */
+  /** Last selectable date: today in the settings timezone. */
   maxKey: string
 }) {
   const navigateRange = useRangeNavigate()
