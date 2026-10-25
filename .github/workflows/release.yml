@@ -77,6 +77,11 @@ jobs:
           fi
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
+      # PageProps / LayoutProps and next-env.d.ts don't exist in a fresh checkout
+      # until Next generates them (normally during dev or build).
+      - name: Generate Next route types
+        run: bunx next typegen
+
       - run: bun run typecheck
 
       - run: bun run build
