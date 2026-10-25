@@ -85,6 +85,12 @@ export type NextFetch = {
   from: string
   /** Fetch mentions newer than this id (null = last 7 days). */
   mentionsSinceId: string | null
+  /**
+   * Replies are needed only from here (sync.refreshReplies = "new-only"):
+   * fetch [from, repliesFrom) without replies and [repliesFrom, now] with
+   * them. Equals `from` when every reply is refreshed.
+   */
+  repliesFrom?: string
 }
 
 /** Printed by `xstats import --inbox --json`. */
