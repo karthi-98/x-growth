@@ -15,12 +15,13 @@ import { command as plan } from "./commands/plan"
 import { command as setup } from "./commands/setup"
 import { command as start } from "./commands/start"
 import { command as status } from "./commands/status"
+import { command as stop } from "./commands/stop"
 import { command as uninstall } from "./commands/uninstall"
 import { command as update } from "./commands/update"
 import type { Command } from "./types"
 import { makeOutput, parseArgs } from "./util"
 
-const commands: Command[] = [setup, importCmd, plan, status, doctor, start, autostart, backup, update, uninstall]
+const commands: Command[] = [setup, importCmd, plan, status, doctor, start, stop, autostart, backup, update, uninstall]
 
 function help(name?: string) {
   const cmd = name ? commands.find((c) => c.name === name) : undefined

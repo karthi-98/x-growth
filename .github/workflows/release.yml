@@ -1,0 +1,143 @@
+# Release bundles (docs/ARCHITECTURE.md section 9, install/README.md).
+#
+# Every run builds the app bundle on each platform (install/pack.ts), with
+# that platform's libSQL native binary, and tests it end to end: install,
+# start on 127.0.0.1, backup, update dry run, both rollback paths and a real
+# update (install/test-update.ts).
+#
+# Pushing a tag like v1.2.3 also creates a DRAFT GitHub release with the
+# bundles, the installers and SHA256SUMS. Nothing reaches users until a
+# maintainer publishes that draft: `xstats update` and the installers only
+# see published releases.
+
+name: Release bundles
+
+on:
+  push:
+    tags: ["v*"]
+  pull_request:
+    paths:
+      - ".github/workflows/release.yml"
+      - "install/**"
+      - "lib/runtime/**"
+      - "cli/commands/**"
+      - "worker/**"
+      - "next.config.ts"
+      - "proxy.ts"
+      - "package.json"
+      - "bun.lock"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  bundle:
+    name: Bundle ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: win-x64
+            os: windows-latest
+          - platform: mac-arm64
+            os: macos-15
+          - platform: mac-x64
+            os: macos-15-intel
+          - platform: linux-x64
+            os: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+
+      - run: bun install --frozen-lockfile
+
+      - name: Version
+        id: version
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            version="${GITHUB_REF_NAME#v}"
+            bun install/pack.ts set-version "$version"
+          else
+            version="$(bun -e 'console.log(require("./package.json").version)')"
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      # PageProps / LayoutProps and next-env.d.ts don't exist in a fresh checkout
+      # until Next generates them (normally during dev or build).
+      - name: Generate Next route types
+        run: bunx next typegen
+
+      - run: bun run typecheck
+
+      # lib/db/client.ts opens the database as soon as it loads, and Next loads
+      # it while collecting page data, so the build needs an existing data
+      # folder. Use an empty one outside the project: nothing in it can end up
+      # in a bundle.
+      - name: Build
+        env:
+          XSTATS_DATA_DIR: ${{ runner.temp }}/build-data
+        run: |
+          bun -e 'require("fs").mkdirSync(process.env.XSTATS_DATA_DIR, { recursive: true })'
+          bun run build
+
+      - name: Pack
+        run: |
+          bun install/pack.ts --version "${{ steps.version.outputs.version }}" --out dist
+          # The same build under a later version, for the update test to update to.
+          bun install/pack.ts --version "99.0.0-test.${{ github.run_number }}" --out dist-test
+
+      - name: Test the bundle (install, start, backup, update, rollback)
+        run: bun install/test-update.ts dist/x-growth-* dist-test/x-growth-*
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: bundle-${{ matrix.platform }}
+          path: dist/x-growth-*
+          if-no-files-found: error
+          retention-days: 14
+
+  release:
+    name: Draft release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: bundle
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: bundle-*
+          path: dist
+          merge-multiple: true
+
+      - name: Installers and checksums
+        run: |
+          cp install/install.ps1 install/install.sh dist/
+          cd dist
+          sha256sum x-growth-* install.ps1 install.sh > SHA256SUMS
+          cat SHA256SUMS
+
+      - name: Create the draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          flags=(--draft --verify-tag --generate-notes --title "X Growth ${GITHUB_REF_NAME#v}")
+          if [[ "$GITHUB_REF_NAME" == *-* ]]; then flags+=(--prerelease); fi
+          gh release create "$GITHUB_REF_NAME" dist/* --repo "$GITHUB_REPOSITORY" "${flags[@]}"

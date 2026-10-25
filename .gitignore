@@ -42,3 +42,6 @@ next-env.d.ts
 
 # local data: database, backups, inbox, secrets, raw X exports
 /data/
+
+# release bundles (install/pack.ts)
+/dist/
